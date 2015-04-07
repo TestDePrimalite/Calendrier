@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        Page de connexion <br/>
+    </head>
+    <body>
+        <b>Identifiez-vous : </b> <br/>
+        <form action="" method="POST">
+            Pseudo : <input type="text" name="login" value="Entrez votre pseudo"/> <br/>
+            Mot de passe : <input type="password" name="pass" /> <br/>
+            <input type="submit"/> <br/>
+        </form>
+        {% if erreur == 1 %}
+            <b>Une erreur est survenue. Veuillez ré-essayer.</b>
+        {% elseif erreur == 2 %}
+            <b>Erreur : Mauvais pseudo ou mot de passe.</b>
+        {% elseif erreur == 3 %}
+            <b>Erreur : Aucun pseudo n'a été rentré.</b>
+        {% elseif erreur == 4 %}
+            <b>Erreur : Aucun mot de passe n'a été rentré.</b>
+        {% endif %}
+    </body>
+</html>

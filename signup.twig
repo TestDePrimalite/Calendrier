@@ -1,13 +1,21 @@
 <!DOCTYPE html>
 <html>
     <head>
-        Formulaire d'enregistrement : <br/>
+        Formulaire d'enregistrement <br/> <br/>
     </head>
     <body>
+        <b>Remplissez le formulaire pour créer un compte :</b> <br/>
         <form action="" method="post">
             Pseudo : <input type="text" name="login" value="Choisissez un pseudo"></input><br/>
             Mot de passe : <input type="password" name="pass"></input><br/>
             <input type="submit"/> <br/>
-        </form>
+        </form> <br/>
+        {% if erreur == 1 %}
+            <b>Erreur : Le pseudo choisi existe déjà.</b>
+        {% elseif erreur == 2 %}
+            <b>Erreur : Aucun pseudo n'a été rentré.</b>
+        {% elseif erreur == 3 %}
+            <b>Erreur : Aucun mot de passe n'a été rentré.</b>
+        {% endif %}
     </body>
 </html>
