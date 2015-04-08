@@ -55,7 +55,7 @@ app.all('/signup', function(req,res)
                         console.log(result);
                         req.session.login = req.body.login;
                         req.session.pass = req.body.pass;
-                        console.log(req.session.pseudo);
+                        console.log(req.session.login);
                         console.log(req.session.pass);
                         res.redirect('/');
                     }
@@ -146,6 +146,65 @@ app.get('/logout', function(req,res)
     req.session.login = null;
     req.session.pass = null;
     res.redirect('/');
+});
+
+app.all('/ajouter', function(req,res)
+{
+     if(req.session.login == undefined)
+    {
+        console.log(req.session.login);
+        res.redirect('/login');
+    }
+    else
+    {
+        if(req.method == "POST")
+        {
+            console.log("Titre : " + req.body.titre);
+            console.log("Debut " + req.body.debut);
+            console.log("Fin " + req.body.fin);
+            console.log("Login : " + req.session.login);
+            if(req.body.titre.trim() != "" && req.body.debut.trim() != "" && req.body.fin.trim())
+            {
+                db.query('INSERT INTO evenements VALUES (?,?,?,?)', [req.body.debut,req.body.fin,req.session.login,req.body.titre],
+                function(err,result)
+                {
+                    if(err)
+                    {
+                        console.log(err);
+                        //if(err.code == "ER_DUP_ENTRY")
+                        res.render('ajout_ev.twig', {'erreur' : 1});
+                    }
+                    else if(result.length != 0)
+                    {
+                        console.log(result);
+                        console.log(req.session.pseudo);
+                        res.redirect('/');
+                    }
+                    else
+                    {
+                        console.log("Resultat vide...");
+                        res.render('ajout_ev.twig');
+                    }
+                });
+            }
+            else if(req.body.titre.trim() == "")
+            {
+                res.render('ajout_ev.twig', {'erreur' : 2});
+            }
+            else if(req.body.debut.trim() == "")
+            {
+                res.render('ajout_ev.twig', {'erreur' : 3});
+            }
+            else if(req.body.fin.trim() == "")
+            {
+                res.render('ajout_ev.twig', {'erreur' : 4});
+            }
+        }
+        else
+        {
+            res.render('ajout_ev.twig');
+        }
+    }
 });
 
 app.listen(8080);
