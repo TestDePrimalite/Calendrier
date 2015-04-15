@@ -10,3 +10,13 @@ td{
     width: 14%;
     border: 1px solid;
 }
+
+#formulaire
+{
+   margin: 100px 100px;
+}
+
+.cache
+{
+    display: none;
+}

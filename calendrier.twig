@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <script>
+            window.onload= function(){
+                document.getElementById("styleCalendrier").addEventListener("click",function(event)
+                {
+                    console.log(event.target.dataset['column']);
+                    document.getElementById("formulaire").className="";
+                });
+            }
+        </script>
         <link rel="stylesheet" href="calendrier.css" type="text/css" />
         Bonjour {{ login }} ! <br/>
     </head>
@@ -11,6 +20,23 @@
             Se connecter : <a href='/login'>Cliquez ici</a><br/>
             Créer un compte : <a href='/signup'>Cliquez ici</a><br/>
         {% endif %}
+        <div class="cache" id="formulaire"><b>Remplissez le formulaire pour ajouter un événement :</b> <br/>
+            <form action="" method="post">
+                Titre:  <input type="text" name="titre" value="Choisissez un titre"></input><br/>
+                Début (Format:"2015-04-08 00:00:00") : <input type="text" name="debut"></input><br/>
+                Fin (Format:"2015-04-08 00:00:00") :  <input type="text" name="fin"></input><br/>
+                <input type="submit"/> <br/>
+            </form> <br/>
+            {% if erreur == 1 %}
+                <b>Erreur : Veuillez ré-essayer.</b>
+            {% elseif erreur == 2 %}
+                <b>Erreur : Pas de titre.</b>
+            {% elseif erreur == 3 %}
+                <b>Erreur : Pas de date de début.</b>
+            {% elseif erreur == 4 %}
+                <b>Erreur : Pas de date de fin.</b>
+            {% endif %}
+        </div>
         Calendrier : 
         <table id="styleCalendrier">
             <tr>
@@ -25,7 +51,7 @@
             {% for i in 1..48 %}
                 <tr class="lignes">
                 {% for j in 1..7 %}
-                    <td class="colonnes">La</td>
+                    <td class="colonnes"></td>
                 {% endfor %}
                 </tr>
             {% endfor %}
