@@ -20,11 +20,13 @@ app
     .use(bodyP.json())
     .use(bodyP.urlencoded({ extended: false }))
     .use(cookieP())
+    .use(express.static('.'))
     .use(session({ secret: '12345' }));
     
 app.set('views', '');
 app.set('view engine', 'html');
 app.engine('html', twig.__express);
+
 
 app.all('/signup', function(req,res)
 {

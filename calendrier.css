@@ -1,0 +1,12 @@
+#styleCalendrier{
+    width: 90%; 
+    text-align: center; 
+    margin: auto; 
+    border-collapse: collapse;
+}
+
+td{
+    height: 20px;
+    width: 14%;
+    border: 1px solid;
+}

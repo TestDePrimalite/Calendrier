@@ -1,11 +1,34 @@
+<!DOCTYPE html>
 <html>
     <head>
+        <link rel="stylesheet" href="calendrier.css" type="text/css" />
         Bonjour {{ login }} ! <br/>
     </head>
     <body>
         {% if login != undefined %}
             Se déconnecter : <a href='/logout'>Cliquez ici</a><br/>
+        {% else %}
+            Se connecter : <a href='/login'>Cliquez ici</a><br/>
+            Créer un compte : <a href='/signup'>Cliquez ici</a><br/>
         {% endif %}
         Calendrier : 
+        <table id="styleCalendrier">
+            <tr>
+                <td>Lundi</td>
+                <td>Mardi</td>
+                <td>Mercredi</td>
+                <td>Jeudi</td>
+                <td>Vendredi</td>
+                <td>Samedi</td>
+                <td>Dimanche</td>
+            </tr>
+            {% for i in 1..48 %}
+                <tr class="lignes">
+                {% for j in 1..7 %}
+                    <td class="colonnes">La</td>
+                {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
     </body>
 </html>
