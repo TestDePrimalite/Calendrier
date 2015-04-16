@@ -21,23 +21,65 @@
             Créer un compte : <a href='/signup'>Cliquez ici</a><br/>
         {% endif %}
         <div class="cache" id="formulaire"><b>Remplissez le formulaire pour ajouter un événement :</b> <br/>
-            <form action="" method="post">
+            <a class="close" href="/">
+                <i class="formClose">
+                    <b>X</b>
+                </i>
+            </a>
+            <form action="/ajouter" method="post">
                 Titre:  <input type="text" name="titre" value="Choisissez un titre"></input><br/>
-                Début (Format:"2015-04-08 00:00:00") : <input type="text" name="debut"></input><br/>
-                Fin (Format:"2015-04-08 00:00:00") :  <input type="text" name="fin"></input><br/>
+                Jour : 
+                <select name="jour">
+                    <option>Lundi</option>
+                    <option>Mardi</option>
+                    <option>Mercredi</option>
+                    <option>Jeudi</option>
+                    <option>Vendredi</option>
+                    <option>Samedi</option>
+                    <option>Dimanche</option>
+                </select><br/>
+                Début : 
+                <select name="debut">
+                {% for j in 0..23 %}
+                    {% for i in 0..1 %}
+                        <option>
+                        {% if j < 10%}0{% endif %}{{j}}:{% if i < 1 %}0{% endif %}{{i*30}}:00
+                        </option>
+                    {% endfor %}
+                {% endfor %}
+                </select><br/>
+                Fin : 
+                <select name="fin">
+                {% for j in 0..23 %}
+                    {% for i in 0..1 %}
+                        <option>
+                        {% if j < 10%}0{% endif %}{{j}}:{% if i < 1 %}0{% endif %}{{i*30}}:00
+                        </option>
+                    {% endfor %}
+                {% endfor %}
+                </select><br/>
                 <input type="submit"/> <br/>
             </form> <br/>
-            {% if erreur == 1 %}
-                <b>Erreur : Veuillez ré-essayer.</b>
-            {% elseif erreur == 2 %}
-                <b>Erreur : Pas de titre.</b>
-            {% elseif erreur == 3 %}
-                <b>Erreur : Pas de date de début.</b>
-            {% elseif erreur == 4 %}
-                <b>Erreur : Pas de date de fin.</b>
-            {% endif %}
         </div>
-        Calendrier : 
+        {% if erreur == 1 %}
+            <b>Erreur : Date déjà utilisée.</b>
+        {% elseif erreur == 2 %}
+            <b>Erreur : Pas de titre.</b>
+        {% elseif erreur == 3 %}
+            <b>Erreur : Pas de date de début.</b>
+        {% elseif erreur == 4 %}
+            <b>Erreur : Pas de date de fin.</b>
+        {% elseif erreur == 5 %}
+            <b>Erreur : L'heure de début est après ou en même temps que l'heure de fin.</b>
+        {% elseif erreur == 6 %}
+            <b>Erreur : Aucun jour n'est rentré.</b>
+        {% elseif erreur == 7 %}
+            <b>Erreur : Problème de recherche dans la base de données. Veuillez réessayer.</b>
+        {% elseif erreur == 8 %}
+            <b>Erreur : Un événement est déjà présent au niveau de cette plage horaire.</b>
+        {% endif %}
+        <br>
+        Calendrier : </br>
         <table id="styleCalendrier">
             <tr>
                 <td>Lundi</td>

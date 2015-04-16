@@ -13,10 +13,34 @@ td{
 
 #formulaire
 {
-   margin: 100px 100px;
+   margin: 10% 10% 20% 20%;
+   position: fixed;
+   background-color: white;
+   border: 1px solid;
+   border-color: black;
 }
 
 .cache
 {
     display: none;
+}
+
+.close
+{
+    font-family: courier;
+    color: #F00;
+    position: absolute;
+    height: 0px;
+    right: 0.2ex;
+    top: 0px;
+    cursor: pointer;
+}
+
+.formClose
+{
+    display: inline-block;
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
 }

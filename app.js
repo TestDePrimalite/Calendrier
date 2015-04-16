@@ -84,9 +84,17 @@ app.all('/signup', function(req,res)
     }
 });
 
-app.get('/', function(req,res)
+app.all('/', function(req,res)
 {
-   res.render('calendrier.twig', {'login' : req.session.login});
+   if(req.method == "POST")
+   {
+       res.redirect('/ajouter');
+   }
+   else
+   {
+       res.render('calendrier.twig', {'login' : req.session.login});
+   }
+   
 });
 
 app.all('/login', function(req,res)
@@ -150,8 +158,9 @@ app.get('/logout', function(req,res)
     res.redirect('/');
 });
 
-app.all('/ajouter', function(req,res)
+app.post('/ajouter', function(req,res)
 {
+    console.log("Dans /ajouter : method = " + req.method);
      if(req.session.login == undefined)
     {
         console.log(req.session.login);
@@ -159,52 +168,79 @@ app.all('/ajouter', function(req,res)
     }
     else
     {
-        if(req.method == "POST")
+        console.log("Titre : " + req.body.titre);
+        console.log("Debut " + req.body.debut);
+        console.log("Fin " + req.body.fin);
+        console.log("Login : " + req.session.login);
+        if(req.body.titre.trim() != "" && req.body.debut.trim() != "" && req.body.fin.trim() && req.body.debut < req.body.fin
+            && req.body.jour.trim() != "")
         {
-            console.log("Titre : " + req.body.titre);
-            console.log("Debut " + req.body.debut);
-            console.log("Fin " + req.body.fin);
-            console.log("Login : " + req.session.login);
-            if(req.body.titre.trim() != "" && req.body.debut.trim() != "" && req.body.fin.trim())
+            db.query('SELECT * FROM evenements WHERE jour=(?)', [req.body.jour], function(err,result)
             {
-                db.query('INSERT INTO evenements VALUES (?,?,?,?)', [req.body.debut,req.body.fin,req.session.login,req.body.titre],
-                function(err,result)
+                if(err)
                 {
-                    if(err)
+                    console.log(err);
+                    res.render('calendrier.twig', {'erreur' : 7, 'login' : req.session.login});
+                }
+                else
+                {
+                    console.log(result);
+                    if(result.length > 0)
                     {
-                        console.log(err);
-                        //if(err.code == "ER_DUP_ENTRY")
-                        res.render('ajout_ev.twig', {'erreur' : 1});
+                        for(var j in result)
+                        {
+                            if((req.body.debut <= result[j]["debut"] && req.body.fin > result[j]["debut"])
+                                || (req.body.debut > result[j]["debut"] && req.body.debut < result[j]["fin"]))
+                            {
+                                res.render('calendrier.twig', {'erreur' : 8, 'login' : req.session.login});
+                                return;
+                            }
+                        }
                     }
-                    else if(result.length != 0)
+                    db.query('INSERT INTO evenements VALUES (?,?,?,?,?,?)', [req.body.debut,req.body.fin,req.body.jour,req.session.login,
+                    req.body.titre,req.session.login+req.body.jour+req.body.debut],function(err,result)
                     {
-                        console.log(result);
-                        console.log(req.session.pseudo);
-                        res.redirect('/');
-                    }
-                    else
-                    {
-                        console.log("Resultat vide...");
-                        res.render('ajout_ev.twig');
-                    }
-                });
-            }
-            else if(req.body.titre.trim() == "")
-            {
-                res.render('ajout_ev.twig', {'erreur' : 2});
-            }
-            else if(req.body.debut.trim() == "")
-            {
-                res.render('ajout_ev.twig', {'erreur' : 3});
-            }
-            else if(req.body.fin.trim() == "")
-            {
-                res.render('ajout_ev.twig', {'erreur' : 4});
-            }
+                        if(err)
+                        {
+                            console.log(err);
+                            //if(err.code == "ER_DUP_ENTRY")
+                            res.render('calendrier.twig', {'erreur' : 1, 'login' : req.session.login});
+                        }
+                        else if(result.length != 0)
+                        {
+                            console.log(result);
+                            console.log(req.session.login);
+                            res.redirect('/');
+                        }
+                        else
+                        {
+                            console.log("Resultat vide...");
+                            res.render('calendrier.twig', {'login' : req.session.login});
+                        }
+                    });
+                }
+            });
+            
         }
-        else
+        else if(req.body.titre.trim() == "")
         {
-            res.render('ajout_ev.twig');
+            res.render('calendrier.twig', {'erreur' : 2, 'login' : req.session.login});
+        }
+        else if(req.body.debut.trim() == "")
+        {
+            res.render('calendrier.twig', {'erreur' : 3, 'login' : req.session.login});
+        }
+        else if(req.body.fin.trim() == "")
+        {
+            res.render('calendrier.twig', {'erreur' : 4, 'login' : req.session.login});
+        }
+        else if(req.body.debut >= req.body.fin)
+        {
+            res.render('calendrier.twig', {'erreur' : 5, 'login' : req.session.login});
+        }
+        else if(req.body.jour.trim() == "")
+        {
+            res.render('calendrier.twig', {'erreur' : 6, 'login' : req.session.login});
         }
     }
 });
