@@ -11,6 +11,19 @@ td{
     border: 1px solid;
 }
 
+.occupe{
+    background-color: red;
+}
+
+#vide{
+    border: none;
+    width: 10px;
+}
+
+.horaires{
+    width: 10px;
+}
+
 #formulaire
 {
    margin: 10% 10% 20% 20%;

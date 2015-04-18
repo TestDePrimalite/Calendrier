@@ -82,6 +82,7 @@
         Calendrier : </br>
         <table id="styleCalendrier">
             <tr>
+                <td id="vide"></td>
                 <td>Lundi</td>
                 <td>Mardi</td>
                 <td>Mercredi</td>
@@ -90,10 +91,77 @@
                 <td>Samedi</td>
                 <td>Dimanche</td>
             </tr>
-            {% for i in 1..48 %}
+            {% for i in 0..47 %}
                 <tr class="lignes">
-                {% for j in 1..7 %}
-                    <td class="colonnes"></td>
+                {% for j in 0..7 %}
+                    {% if j == 0 %}
+                        <td class="horaires">
+                            {%if i/2<10%}0{%endif%}{%if i%2==1%}{{i/2-0.5}}{%else%}{{i/2}}{%endif%}:{{i*30%60}}{%if i%2==0%}0{%endif%}
+                        </td>
+                    {% else %}
+                        
+                           <td class="colonnes">
+                                {% for k in result if result != undefined%}
+                                    {% set heure = "" %}
+                                    {% if i%2==1%}
+                                        {% set heure = heure ~ i/2 - 0.5 ~ ":" %}
+                                    {% else %}
+                                        {% set heure = heure ~ i/2 ~ ":" %}
+                                    {% endif %}
+                                    {% set heure = heure ~ i*30%60 %}
+                                    {% if i%2==0 %}
+                                        {% set heure = heure ~ "0" %}
+                                    {% endif %}
+                                    {% if i/2<10 %}
+                                        {% set heure = 0~heure %}
+                                    {% endif %}
+                                    {% set heure = heure ~":00"%}
+                                    {% if k["jour"] == "Lundi" and j == 1 and k["debut"] >= heure and k["fin"] >= heure %}
+                                        <div class="occupe">
+                                            {% if k["debut"] == heure %}
+                                                {{k["titre"]}}
+                                            {% endif %}
+                                        </div>
+                                    {% elseif k["jour"] == "Mardi" and j == 2 and k["debut"] >= heure and k["fin"] >= heure %}
+                                        <div class="occupe">
+                                            {% if k["debut"] == heure %}
+                                                {{k["titre"]}}
+                                            {% endif %}
+                                        </div>
+                                    {% elseif k["jour"] == "Mercredi" and j == 3 and k["debut"] >= heure and k["fin"] >= heure %}
+                                        <div class="occupe">
+                                            {% if k["debut"] == heure %}
+                                                {{k["titre"]}}
+                                            {% endif %}
+                                        </div>
+                                    {% elseif k["jour"] == "Jeudi" and j == 4 and k["debut"] >= heure and k["fin"] >= heure %}
+                                        <div class="occupe">
+                                            {% if k["debut"] == heure %}
+                                                {{k["titre"]}}
+                                            {% endif %}
+                                        </div>
+                                    {% elseif k["jour"] == "Vendredi" and j == 5 and k["debut"] >= heure and k["fin"] >= heure %}
+                                        <div class="occupe">
+                                            {% if k["debut"] == heure %}
+                                                {{k["titre"]}}
+                                            {% endif %}
+                                        </div>
+                                    {% elseif k["jour"] == "Samedi" and j == 6 and k["debut"] >= heure and k["fin"] >= heure %}
+                                        <div class="occupe">
+                                            {% if k["debut"] == heure %}
+                                                {{k["titre"]}}
+                                            {% endif %}
+                                        </div>
+                                    {% elseif k["jour"] == "Dimanche" and j == 7 and k["debut"] >= heure and k["fin"] >= heure %}
+                                        <div class="occupe">
+                                            {% if k["debut"] == heure %}
+                                                {{k["titre"]}}
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                    {% endif %}
                 {% endfor %}
                 </tr>
             {% endfor %}

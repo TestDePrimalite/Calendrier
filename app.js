@@ -92,9 +92,23 @@ app.all('/', function(req,res)
    }
    else
    {
-       res.render('calendrier.twig', {'login' : req.session.login});
+       db.query('SELECT * FROM evenements', function(err,result)
+       {
+           if(err)
+           {
+               console.log(err);
+               res.render('calendrier.twig', {'erreur' : 7, 'login': req.session.login});   // Probleme 7: pb recherche BD
+           }
+           else if(result.length > 0)
+           {
+               console.log(result);
+               console.log(result[0]["debut"]);
+               res.render('calendrier.twig', {'result' : result, 'login' : req.session.login});
+           }
+           else
+               res.render('calendrier.twig', {'login' : req.session.login});
+       });
    }
-   
 });
 
 app.all('/login', function(req,res)
