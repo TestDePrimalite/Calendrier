@@ -101,9 +101,77 @@ app.all('/', function(req,res)
            }
            else if(result.length > 0)
            {
-               console.log(result);
-               console.log(result[0]["debut"]);
-               res.render('calendrier.twig', {'result' : result, 'login' : req.session.login});
+                console.log(result);
+                console.log(result[0]["debut"]);
+                var result_table = '<table id="styleCalendrier">';
+                result_table += '<tr>';
+                result_table += '<td id="vide"></td><td>Lundi</td>';
+                result_table += '<td>Mardi</td>';
+                result_table += '<td>Mercredi</td>';
+                result_table += '<td>Jeudi</td>';
+                result_table += '<td>Vendredi</td>';
+                result_table += '<td>Samedi</td>';
+                result_table += '<td>Dimanche</td>';
+                result_table += '</tr>';
+                for (var i = 0; i < 48; i++) {
+                    result_table += '<tr class="lignes">';
+                    for (var j = 0; j < 8; j++) {
+                        if (j == 0) {
+                            result_table += '<td class="horaires">';
+                            if (i/2 < 10) {
+                                result_table += 0;
+                            }
+                            if (i%2 == 1) {
+                                result_table += i/2-0.5;
+                            }
+                            else {
+                                result_table += i/2;
+                            }
+                            result_table += ':';
+                            result_table += i*30%60;
+                            if (i%2 == 0) {
+                                result_table += 0;
+                            }
+                            result_table += '</td>';
+                        }
+                        else {
+                            result_table += '<td class="colonnes">';
+                            if (result != undefined) {
+                                for (var k in result) {
+                                    var heure = "";
+                                    if (i%2 == 1) {
+                                        heure = heure + (i/2 - 0.5) + ":";
+                                    }
+                                    else {
+                                        heure = heure + (i/2) + ":";
+                                    }
+                                    heure = heure + i*30%60;
+                                    if (i%2 == 0) {
+                                        heure = heure + "0";
+                                    }
+                                    if (i/2 < 10) {
+                                        heure = "0" + heure;
+                                    }
+                                    heure = heure + ":00";
+                                    if (((k["jour"] == "Lundi" && j == 1) || 
+                                        (k["jour"] == "Mardi" && j == 2) || 
+                                        (k["jour"] == "Mercredi" && j == 3) || 
+                                        (k["jour"] == "Jeudi" && j == 4) || 
+                                        (k["jour"] == "Vendredi" && j == 5) || 
+                                        (k["jour"] == "Samedi" && j == 6) || 
+                                        (k["jour"] == "Dimanche" && j == 7))
+                                        && (k["debut"] >= heure) && (k["fin"] >= heure)) {
+                                        result_table += '<div class="occupe">';
+                                        if (k["debut"] == heure) {
+                                            result_table += k["titre"];
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+               res.render('calendrier.twig', {'calendrier' : result_table, 'login' : req.session.login});
            }
            else
                res.render('calendrier.twig', {'login' : req.session.login});
