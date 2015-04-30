@@ -79,7 +79,40 @@
             <b>Erreur : Un événement est déjà présent au niveau de cette plage horaire.</b>
         {% endif %}
         <br>
-        Calendrier : </br>
-        {{ calendrier }}
+        Calendrier :
+        <table id="styleCalendrier"></table>
+        <script>
+            var jours = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+            var calendrier = document.getElementById("styleCalendrier");
+            for (var i = 0; i < 49; i++) {
+                curr_tr = document.createElement("tr");
+                for (var j = 0; j < 8; j++) {
+                    var curr_td = document.createElement("td");
+                    if (i == 0) {
+                        if (j == 0) {
+                            curr_td.setAttribute("id", "vide");
+                        }
+                        else {
+                            var curr_tn = document.createTextNode(jours[j-1]);
+                            curr_td.appendChild(curr_tn);
+                        }
+                    }
+                    else {
+                        curr_tr.setAttribute("class", "lignes");
+                        if (j == 0) {
+                            curr_td.setAttribute("class", "horaires");
+                            var curr_tn = document.createTextNode("heure");
+                            curr_td.appendChild(curr_tn);
+                        }
+                        else {
+                            curr_td.setAttribute("class", "colonnes");
+                        }
+                    }
+                    curr_tr.appendChild(curr_td);
+                }
+                calendrier.appendChild(curr_tr);
+            }
+            //var evenements = {{ evenements }};
+        </script>
     </body>
 </html>
