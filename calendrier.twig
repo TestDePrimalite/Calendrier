@@ -101,7 +101,19 @@
                         curr_tr.setAttribute("class", "lignes");
                         if (j == 0) {
                             curr_td.setAttribute("class", "horaires");
-                            var curr_tn = document.createTextNode("heure");
+                            var heure = "";
+                            var res = (i-1)/2 - 0.5;
+                            if((i-1)%2 == 1)
+                                heure = heure + res + ":";
+                            else
+                                heure = heure + (i-1)/2 + ":";
+                            heure = heure + (i-1)*30%60;
+                            if((i-1)%2 == 0)
+                                heure = heure + 0;
+                            if((i-1)/2 < 10)
+                                heure = 0 + heure;
+                            heure = heure + ":00";    // A mettre ou non: Au choix ( Les secondes )
+                            var curr_tn = document.createTextNode(heure);
                             curr_td.appendChild(curr_tn);
                         }
                         else {
