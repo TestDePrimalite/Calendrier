@@ -82,7 +82,17 @@
         Calendrier :
         <table id="styleCalendrier"></table>
         <script>
+            //Jours
             var jours = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+            //Heures
+            var heures = [];
+            for (var i = 0; i < 24; i++) {
+                var heure = (i<10 ? "0" : "") + i + ":00";
+                heures.push(heure);
+                heure = (i<10 ? "0" : "") + i + ":30";
+                heures.push(heure);
+            }
+            //Calendrier
             var calendrier = document.getElementById("styleCalendrier");
             for (var i = 0; i < 49; i++) {
                 curr_tr = document.createElement("tr");
@@ -101,19 +111,7 @@
                         curr_tr.setAttribute("class", "lignes");
                         if (j == 0) {
                             curr_td.setAttribute("class", "horaires");
-                            var heure = "";
-                            var res = (i-1)/2 - 0.5;
-                            if((i-1)%2 == 1)
-                                heure = heure + res + ":";
-                            else
-                                heure = heure + (i-1)/2 + ":";
-                            heure = heure + (i-1)*30%60;
-                            if((i-1)%2 == 0)
-                                heure = heure + 0;
-                            if((i-1)/2 < 10)
-                                heure = 0 + heure;
-                            heure = heure + ":00";    // A mettre ou non: Au choix ( Les secondes )
-                            var curr_tn = document.createTextNode(heure);
+                            var curr_tn = document.createTextNode(heures[i-1]);
                             curr_td.appendChild(curr_tn);
                         }
                         else {
@@ -124,7 +122,43 @@
                 }
                 calendrier.appendChild(curr_tr);
             }
-            //var evenements = {{ evenements }};
+            //Evenements
+            {% if evenements != undefined %}
+            var evenements = {{ evenements|json_encode|raw }};
+            for (var i = 0; i < evenements.length; i++) {
+                for (var j = 0; j < 7; j++) {
+                    if (jours[j] == evenements[i].jour) {
+                        console.log(jours[j]);
+                        break;
+                    }
+                }
+                for (var k = 0; k < 48; k++) {
+                    var horaire = heures[k] + ":00";
+                    if (horaire >= evenements[i].debut) {
+                        console.log(horaire);
+                        break;
+                    }
+                }
+                for (var l = k+1; l < 48; l++) {
+                    horaire = heures[l] + ":00";
+                    if (horaire >= evenements[i].fin) {
+                        console.log(horaire);
+                        break;
+                    }
+                }
+                console.log("jour : " + j + ", debut : " + k + ", fin : " + l);
+                var curr_td = document.querySelector('#styleCalendrier>tr:nth-child(' + (k+2) + ')>td:nth-child(' + (j+2) + ')');
+                curr_td.setAttribute("class", "occupe");
+                var curr_tn = document.createTextNode(evenements[i].titre);
+                curr_td.appendChild(curr_tn);
+                k++;
+                while (k != l) {
+                    curr_td = document.querySelector('#styleCalendrier>tr:nth-child(' + (k+2) + ')>td:nth-child(' + (j+2) + ')');
+                    curr_td.setAttribute("class", "occupe");
+                    k++;
+                }
+            }
+            {% endif %}
         </script>
     </body>
 </html>
