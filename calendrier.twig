@@ -2,12 +2,19 @@
 <html>
     <head>
         <script>
+            var xhr = new XMLHttpRequest();
+
             window.onload= function(){
                 document.getElementById("styleCalendrier").addEventListener("click",function(event)
                 {
                     console.log(event.target.dataset['column']);
                     document.getElementById("formulaire").className="";
                 });
+                setInterval(function(){
+                    xhr.open("GET","/liste",true);
+                    xhr.send();
+                    
+                }, 1000);
             }
         </script>
         <link rel="stylesheet" href="calendrier.css" type="text/css" />

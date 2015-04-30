@@ -260,4 +260,21 @@ app.post('/ajouter', function(req,res)
     }
 });
 
+app.get('/liste', function(req,res)
+{
+    db.query('SELECT * FROM evenements', function(err, result) 
+    {
+        if(err)
+        {
+            console.log(err);
+            res.render('/liste', {'erreur' : 1});
+        }
+        else
+        {
+            console.log(result);
+            res.json(result);
+        }
+    });
+});
+
 app.listen(process.env.PORT);
