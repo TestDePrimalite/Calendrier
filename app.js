@@ -3,7 +3,7 @@ var bodyP = require('body-parser');
 var cookieP = require('cookie-parser');
 
 var app = express();
-
+var evts = require('events');
 var twig = require('twig');
 var mysql = require('mysql');
 var db = mysql.createConnection({
@@ -12,6 +12,8 @@ var db = mysql.createConnection({
     password: '',
     database: 'c9'
 });
+
+var an_emmiter = new evts.EventEmitter();
 
 var session = require('express-session');
 
@@ -225,6 +227,7 @@ app.post('/ajouter', function(req,res)
                         {
                             console.log(result);
                             console.log(req.session.login);
+                            an_emmiter.emit('nouvel_ev',result);
                             res.redirect('/');
                         }
                         else
@@ -262,19 +265,23 @@ app.post('/ajouter', function(req,res)
 
 app.get('/liste', function(req,res)
 {
-    db.query('SELECT * FROM evenements', function(err, result) 
+    db.query('SELECT * FROM evenements', function(err,result)
     {
         if(err)
         {
             console.log(err);
-            res.render('/liste', {'erreur' : 1});
         }
         else
         {
-            console.log(result);
             res.json(result);
         }
     });
+});
+
+app.get('/effacer', function(req, res) 
+{
+    console.log("ZBRA");
+    res.send(300);
 });
 
 app.listen(process.env.PORT);

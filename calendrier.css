@@ -35,6 +35,15 @@ td{
    border-color: black;
 }
 
+#formulaireEffacer
+{
+   margin: 10% 10% 20% 20%;
+   position: fixed;
+   background-color: white;
+   border: 1px solid;
+   border-color: black;
+}
+
 .cache
 {
     display: none;

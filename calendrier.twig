@@ -2,19 +2,44 @@
 <html>
     <head>
         <script>
-            var xhr = new XMLHttpRequest();
-
+        var evenements = {{ evenements|json_encode|raw }};
+               
             window.onload= function(){
                 document.getElementById("styleCalendrier").addEventListener("click",function(event)
                 {
-                    console.log(event.target.dataset['column']);
-                    document.getElementById("formulaire").className="";
-                });
-                setInterval(function(){
-                    xhr.open("GET","/liste",true);
-                    xhr.send();
                     
-                }, 1000);
+                    console.log(event.target.className);
+                    if(event.target.className == "close")
+                    {
+                        console.log("coucou");
+                        document.getElementById("formulaireEffacer").className="cache";
+                        document.getElementById("formulaire").className="cache";
+                    }
+                    else if(event.target.className != "occupe" && event.target.className != "formulaire" && event.target.className != "formulaireEffacer")
+                        document.getElementById("formulaire").className="";
+                    else
+                    {
+                        document.getElementById("formulaireEffacer").className="";
+                    }
+                        
+                });
+                
+            };
+            var xhr = new XMLHttpRequest();
+
+            xhr.responseType = 'json';
+            xhr.onload=function()
+            {
+                var evenements = {{ evenements|json_encode|raw }};
+                return;
+            }
+            xhr.open("GET",'/liste',true);
+            xhr.send();
+            
+            window.onload=function(){
+                setInterval(function(){
+                    var evenements = {{ evenements|json_encode|raw }};
+                },1000);
             }
         </script>
         <link rel="stylesheet" href="calendrier.css" type="text/css" />
@@ -27,8 +52,19 @@
             Se connecter : <a href='/login'>Cliquez ici</a><br/>
             Créer un compte : <a href='/signup'>Cliquez ici</a><br/>
         {% endif %}
-        <div class="cache" id="formulaire"><b>Remplissez le formulaire pour ajouter un événement :</b> <br/>
+        <div class="cache" id="formulaireEffacer"><b>Voulez vous effacer cet événement? </b> <br>
             <a class="close" href="/">
+                <i class="formClose">
+                    <b>X</b>
+                </i>
+            </a>
+            <form action="/effacer" method="post">
+                <input type="hidden" name="evenements" value={{result}} />
+                <input type="submit" /> <br>
+            </form>
+        </div>
+        <div class="cache" id="formulaire"><b>Remplissez le formulaire pour ajouter un événement :</b> <br>
+            <a class="close" href = "/">
                 <i class="formClose">
                     <b>X</b>
                 </i>
@@ -139,7 +175,7 @@
             }
             //Evenements
             {% if evenements != undefined %}
-            var evenements = {{ evenements|json_encode|raw }};
+            
             for (var i = 0; i < evenements.length; i++) {
                 for (var j = 0; j < 7; j++) {
                     if (jours[j] == evenements[i].jour) {
@@ -164,6 +200,7 @@
                 console.log("jour : " + j + ", debut : " + k + ", fin : " + l);
                 var curr_td = document.querySelector('#styleCalendrier>tr:nth-child(' + (k+2) + ')>td:nth-child(' + (j+2) + ')');
                 curr_td.setAttribute("class", "occupe");
+                
                 var curr_tn = document.createTextNode(evenements[i].titre);
                 curr_td.appendChild(curr_tn);
                 k++;
