@@ -72,14 +72,14 @@
             <form action="/ajouter" method="post">
                 Titre:  <input type="text" name="titre" value="Choisissez un titre"></input><br/>
                 Jour : 
-                <select name="jour">
-                    <option>Lundi</option>
+                <select id="formjour" name="jour">
+                    <!--<option>Lundi</option>
                     <option>Mardi</option>
                     <option>Mercredi</option>
                     <option>Jeudi</option>
                     <option>Vendredi</option>
                     <option>Samedi</option>
-                    <option>Dimanche</option>
+                    <option>Dimanche</option>-->
                 </select><br/>
                 Début : 
                 <select name="debut">
@@ -129,15 +129,21 @@
             //Mois
             var mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
             //Jours
-            var jours = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+            //var jours = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
             var today = new Date();
             var day_offset = today.getDay();
             var d = new Date();
             d.setDate(today.getDate() - (day_offset-1)%7);
+            var formjour = document.getElementById("formjour");
             var dates = [];
+            var jours = [];
             for (var i = 0; i < 7; i++) {
                 dates[i] = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-                //(d.getDate()<10?'0':'') + d.getDate() + "/" + (d.getMonth()+1<10?'0':'') + (d.getMonth()+1);
+                var curr_opt = document.createElement("option");
+                jours[i] = d.getFullYear() + '-' + (d.getMonth()+1<10?'0':'') + (d.getMonth()+1) + '-' + (d.getDate()<10?'0':'') + d.getDate();
+                var curr_tn = document.createTextNode(jours[i]);
+                curr_opt.appendChild(curr_tn);
+                formjour.appendChild(curr_opt);
                 d.setDate(d.getDate() + 1);
             }
             //Affichage de la semaine courante
@@ -185,8 +191,8 @@
             {% if evenements != undefined %}
             for (var i = 0; i < evenements.length; i++) {
                 for (var j = 0; j < 7; j++) {
-                    if (jours[j] == evenements[i].jour) {
-                        console.log(evenements[i].jour);
+                    if (jours[j] == evenements[i].jour.split("T")[0]) {
+                        console.log(evenements[i].jour.split("T")[0]);
                         console.log(jours[j]);
                         break;
                     }
@@ -208,16 +214,18 @@
                     }
                 }
                 console.log("jour : " + j + ", debut : " + k + ", fin : " + l);
-                var curr_td = document.querySelector('#styleCalendrier>tr:nth-child(' + (k+2) + ')>td:nth-child(' + (j+2) + ')');
-                curr_td.setAttribute("class", "occupe");
-                
-                var curr_tn = document.createTextNode(evenements[i].titre);
-                curr_td.appendChild(curr_tn);
-                k++;
-                while (k != l) {
-                    curr_td = document.querySelector('#styleCalendrier>tr:nth-child(' + (k+2) + ')>td:nth-child(' + (j+2) + ')');
+                if ((j!=7) && (k != 48) && (l != 48)) {
+                    var curr_td = document.querySelector('#styleCalendrier>tr:nth-child(' + (k+2) + ')>td:nth-child(' + (j+2) + ')');
                     curr_td.setAttribute("class", "occupe");
+                
+                    var curr_tn = document.createTextNode(evenements[i].titre);
+                    curr_td.appendChild(curr_tn);
                     k++;
+                    while (k != l) {
+                        curr_td = document.querySelector('#styleCalendrier>tr:nth-child(' + (k+2) + ')>td:nth-child(' + (j+2) + ')');
+                        curr_td.setAttribute("class", "occupe");
+                        k++;
+                    }
                 }
             }
             {% endif %}
