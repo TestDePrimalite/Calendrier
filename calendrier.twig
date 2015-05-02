@@ -135,9 +135,9 @@
             var date_ref = new Date(); //today
             {% endif %}
             console.log("date_ref : " + date_ref.toDateString());
-            var day_offset = date_ref.getDay();
+            var day_offset = (date_ref.getDay()==0?6:date_ref.getDay()-1);
             var d = new Date(date_ref.getFullYear(), date_ref.getMonth(), date_ref.getDate());
-            d.setDate(date_ref.getDate() - (day_offset-1)%7);
+            d.setDate(date_ref.getDate() - day_offset);
             console.log("d : " + d.toDateString());
             //Ajout des options de jours pour l'ajout d'un evenement
             var formjour = document.getElementById("formjour");
