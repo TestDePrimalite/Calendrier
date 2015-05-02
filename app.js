@@ -106,7 +106,12 @@ app.all('/', function(req,res)
                 console.log(result);
                 console.log(result[0]["debut"]);
                 
-                res.render('calendrier.twig', {'evenements' : result, 'login' : req.session.login});
+                if (req.query.date_ref) {
+                    res.render('calendrier.twig', {'evenements' : result, 'login' : req.session.login, 'date_ref': req.query.date_ref});
+                }
+                else {
+                    res.render('calendrier.twig', {'evenements' : result, 'login' : req.session.login});
+                }
            }
            else
                res.render('calendrier.twig', {'login' : req.session.login});
