@@ -64,7 +64,7 @@
             </form>
         </div>
         <div class="cache" id="formulaire"><b>Remplissez le formulaire pour ajouter un événement :</b> <br>
-            <a class="close" href = "/">
+            <a class="close" href="/">
                 <i class="formClose">
                     <b>X</b>
                 </i>
@@ -122,9 +122,12 @@
             <b>Erreur : Un événement est déjà présent au niveau de cette plage horaire.</b>
         {% endif %}
         <br>
-        Calendrier :
+        <b><div id="titre">Calendrier :</div></b>
+        <br>
         <table id="styleCalendrier"></table>
         <script>
+            //Mois
+            var mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
             //Jours
             var jours = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
             var today = new Date();
@@ -133,9 +136,13 @@
             d.setDate(today.getDate() - (day_offset-1)%7);
             var dates = [];
             for (var i = 0; i < 7; i++) {
-                dates[i] = (d.getDate()<10?'0':'') + d.getDate() + "/" + (d.getMonth()+1<10?'0':'') + (d.getMonth()+1);
+                dates[i] = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+                //(d.getDate()<10?'0':'') + d.getDate() + "/" + (d.getMonth()+1<10?'0':'') + (d.getMonth()+1);
                 d.setDate(d.getDate() + 1);
             }
+            //Affichage de la semaine courante
+            var curr_tn = document.createTextNode(" Semaine du " + dates[0].getDate() + " " + mois[dates[0].getMonth()] + (dates[0].getFullYear()==dates[6].getFullYear()?'':' ' + dates[0].getFullYear() + ' ') + " au " + dates[6].getDate() + " " + mois[dates[6].getMonth()] + " " + dates[6].getFullYear());
+            document.getElementById("titre").appendChild(curr_tn);
             //Heures
             var heures = [];
             for (var i = 0; i < 24; i++) {
@@ -155,7 +162,7 @@
                             curr_td.setAttribute("id", "vide");
                         }
                         else {
-                            var curr_tn = document.createTextNode(dates[j-1]);
+                            var curr_tn = document.createTextNode((dates[j-1].getDate()<10?'0':'') + dates[j-1].getDate() + "/" + (dates[j-1].getMonth()+1<10?'0':'') + (dates[j-1].getMonth()+1));
                             curr_td.appendChild(curr_tn);
                         }
                     }
@@ -176,10 +183,10 @@
             }
             //Evenements
             {% if evenements != undefined %}
-            
             for (var i = 0; i < evenements.length; i++) {
                 for (var j = 0; j < 7; j++) {
                     if (jours[j] == evenements[i].jour) {
+                        console.log(evenements[i].jour);
                         console.log(jours[j]);
                         break;
                     }
@@ -187,6 +194,7 @@
                 for (var k = 0; k < 48; k++) {
                     var horaire = heures[k] + ":00";
                     if (horaire >= evenements[i].debut) {
+                        console.log(evenements[i].debut);
                         console.log(horaire);
                         break;
                     }
@@ -194,6 +202,7 @@
                 for (var l = k+1; l < 48; l++) {
                     horaire = heures[l] + ":00";
                     if (horaire >= evenements[i].fin) {
+                        console.log(evenements[i].fin);
                         console.log(horaire);
                         break;
                     }
