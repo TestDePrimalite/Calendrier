@@ -127,14 +127,15 @@
         <script>
             //Jours
             var jours = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
-            /*var today = new Date();
+            var today = new Date();
             var day_offset = today.getDay();
             var d = new Date();
             d.setDate(today.getDate() - (day_offset-1)%7);
+            var dates = [];
             for (var i = 0; i < 7; i++) {
-                var jours[i] = d;
+                dates[i] = (d.getDate()<10?'0':'') + d.getDate() + "/" + (d.getMonth()+1<10?'0':'') + (d.getMonth()+1);
                 d.setDate(d.getDate() + 1);
-            }*/
+            }
             //Heures
             var heures = [];
             for (var i = 0; i < 24; i++) {
@@ -154,7 +155,7 @@
                             curr_td.setAttribute("id", "vide");
                         }
                         else {
-                            var curr_tn = document.createTextNode(jours[j-1]);
+                            var curr_tn = document.createTextNode(dates[j-1]);
                             curr_td.appendChild(curr_tn);
                         }
                     }
