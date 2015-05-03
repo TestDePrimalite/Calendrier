@@ -14,3 +14,5 @@ Le calendrier est capable de naviguer entre les semaines grâce à deux liens "S
 
 Si l'on clique sur une case libre du calendrier, un formulaire de création d'événement s'affiche, et la procédure d'ajout est possible si l'on est connecté.
 Si l'on clique sur une case occupée, un formulaire d'effacement d'événement s'affiche, et l'effacement est possible si l'événement en question a été créé par l'utilisateur connecté.
+
+Note : les événements du calendrier se mettent à jour toutes les 10 secondes.
