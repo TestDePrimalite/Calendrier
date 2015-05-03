@@ -72,3 +72,18 @@ td{
     width: 13px;
     position: absolute;
 }
+
+#sem_suiv{
+    position: absolute;
+    right: 10%;
+}
+
+#sem_prec{
+    position: absolute;
+    left: 10%;
+}
+
+#titre{
+    text-align: center;
+    font-size: 20pt;
+}
