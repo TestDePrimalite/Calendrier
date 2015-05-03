@@ -283,10 +283,29 @@ app.get('/liste', function(req,res)
     });
 });
 
-app.get('/effacer', function(req, res) 
+app.post('/effacer', function(req, res) 
 {
-    console.log("ZBRA");
-    res.send(300);
+    db.query('SELECT * FROM evenements WHERE id="' + req.body.id + '"', function(err,result)
+    {
+        if(err)
+        {
+            console.log(err);
+        }
+        else {
+            if(result.length > 0) {
+                if (result[0].login == req.session.login) {
+                    db.query('DELETE from evenements WHERE id="' + req.body.id + '"', function(err,result)
+                    {
+                        if(err)
+                        {
+                            console.log(err);
+                        }
+                        res.redirect('/');
+                    });
+                }
+            }
+        }
+    });
 });
 
 app.listen(process.env.PORT);
