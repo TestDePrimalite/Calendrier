@@ -220,9 +220,10 @@
                     var curr_td = document.querySelector('#styleCalendrier>tr:nth-child(' + (k+2) + ')>td:nth-child(' + (j+2) + ')');
                     curr_td.setAttribute("class", "occupe");
                     curr_td.setAttribute("id", "premiereCase");
+                    
                     if(k + 1 == l)
                         curr_td.setAttribute("id", "derniereCase");
-                    var curr_tn = document.createTextNode(evenements[i].titre);
+                    var curr_tn = document.createTextNode(evenements[i].titre + "("+evenements[i].login+")");
                     curr_td.appendChild(curr_tn);
                     k++;
                     while (k != l) {
