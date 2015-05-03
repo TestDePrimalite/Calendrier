@@ -2,8 +2,6 @@
 <html>
     <head>
         <script>
-        var evenements = {{ evenements|json_encode|raw }};
-               
             window.onload= function(){
                 var formulaire = document.getElementById("formulaire");
                 var formulaireEffacer = document.getElementById("formulaireEffacer")
@@ -30,22 +28,11 @@
                     formulaireEffacer.className="cache";
                 });
             };
-            var xhr = new XMLHttpRequest();
-
-            xhr.responseType = 'json';
-            xhr.onload=function()
-            {
-                var evenements = {{ evenements|json_encode|raw }};
-                return;
-            }
-            xhr.open("GET",'/liste',true);
-            xhr.send();
-            
-            window.onload=function(){
+            /*window.onload=function(){
                 setInterval(function(){
-                    var evenements = {{ evenements|json_encode|raw }};
+                    
                 },1000);
-            }
+            }*/
         </script>
         <link rel="stylesheet" href="calendrier.css" type="text/css" />
         Bonjour {{ login }} ! <br/>
@@ -207,6 +194,7 @@
             }
             //Evenements
             {% if evenements != undefined %}
+            var evenements = {{ evenements|json_encode|raw }};
             for (var i = 0; i < evenements.length; i++) {
                 for (var j = 0; j < 7; j++) {
                     if (jours[j] == evenements[i].jour.split("T")[0]) {
@@ -247,6 +235,24 @@
                 }
             }
             {% endif %}
+            //AJAX
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET",'/liste',true);
+            xhr.responseType = 'json';
+            xhr.onload=function()
+            {
+                var r = xhr.response;
+                for (var i = 0; i < r.length; i++) {
+                    console.log("Ev " + i + " :");
+                    console.log(r[i].debut);
+                    console.log(r[i].fin);
+                    console.log(r[i].jour);
+                    console.log(r[i].login);
+                    console.log(r[i].titre);
+                    console.log(r[i].id);
+                }
+            }
+            xhr.send();
         </script>
         
     </body>
