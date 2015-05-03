@@ -29,11 +29,6 @@
                     formulaireEffacer.className="cache";
                 });
             };
-            /*window.onload=function(){
-                setInterval(function(){
-                    
-                },1000);
-            }*/
         </script>
         <link rel="stylesheet" href="calendrier.css" type="text/css" />
         Bonjour {{ login }} ! <br/>
@@ -134,6 +129,7 @@
         <script>
             //Mois
             var mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+            
             //Premier jour de la semaine
             {% if date_ref != undefined %}
             var date_ref_str = "{{ date_ref }}";
@@ -149,6 +145,7 @@
             var d = new Date(date_ref.getFullYear(), date_ref.getMonth(), date_ref.getDate());
             d.setDate(date_ref.getDate() - day_offset);
             console.log("d : " + d.toDateString());
+            
             //Ajout des options de jours pour l'ajout d'un evenement
             var formjour = document.getElementById("formjour");
             var dates = []; //tableau d'objets Date pour les dates de la semaine
@@ -163,6 +160,7 @@
                 formjour.appendChild(curr_opt);
                 d.setDate(d.getDate() + 1);
             }
+            
             //Liens vers la semaine suivante et la semaine precedente
             var date_ref_prec = new Date(dates[0].getFullYear(), dates[0].getMonth(), dates[0].getDate());
             date_ref_prec.setDate(dates[0].getDate()-7);
@@ -172,9 +170,11 @@
             date_ref_suiv.setDate(dates[0].getDate()+7);
             console.log("date_ref_suiv : " + date_ref_suiv.toDateString());
             document.getElementById("sem_suiv").setAttribute("href", "/?date_ref="+date_ref_suiv.getFullYear()+"-"+(date_ref_suiv.getMonth()+1<10?'0':'')+(date_ref_suiv.getMonth()+1)+"-"+(date_ref_suiv.getDate()<10?'0':'')+date_ref_suiv.getDate());
+            
             //Affichage de la semaine courante
             var curr_tn = document.createTextNode(" Semaine du " + dates[0].getDate() + " " + mois[dates[0].getMonth()] + (dates[0].getFullYear()==dates[6].getFullYear()?'':' ' + dates[0].getFullYear() + ' ') + " au " + dates[6].getDate() + " " + mois[dates[6].getMonth()] + " " + dates[6].getFullYear());
             document.getElementById("titre").appendChild(curr_tn);
+            
             //Heures
             var heures = [];
             for (var i = 0; i < 24; i++) {
@@ -183,98 +183,120 @@
                 heure = (i<10 ? "0" : "") + i + ":30";
                 heures.push(heure);
             }
+            
             //Calendrier
-            var calendrier = document.getElementById("styleCalendrier");
-            for (var i = 0; i < 49; i++) {
-                curr_tr = document.createElement("tr");
-                for (var j = 0; j < 8; j++) {
-                    var curr_td = document.createElement("td");
-                    if (i == 0) {
-                        if (j == 0) {
-                            curr_td.setAttribute("id", "vide");
+            function print_cal() {
+                var calendrier = document.getElementById("styleCalendrier");
+                for (var i = 0; i < 49; i++) {
+                    curr_tr = document.createElement("tr");
+                    for (var j = 0; j < 8; j++) {
+                        var curr_td = document.createElement("td");
+                        if (i == 0) {
+                            if (j == 0) {
+                                curr_td.setAttribute("id", "vide");
+                            }
+                            else {
+                                var curr_tn = document.createTextNode((dates[j-1].getDate()<10?'0':'') + dates[j-1].getDate() + "/" + (dates[j-1].getMonth()+1<10?'0':'') + (dates[j-1].getMonth()+1));
+                                curr_td.appendChild(curr_tn);
+                            }
                         }
                         else {
-                            var curr_tn = document.createTextNode((dates[j-1].getDate()<10?'0':'') + dates[j-1].getDate() + "/" + (dates[j-1].getMonth()+1<10?'0':'') + (dates[j-1].getMonth()+1));
-                            curr_td.appendChild(curr_tn);
+                            curr_tr.setAttribute("class", "lignes");
+                            if (j == 0) {
+                                curr_td.setAttribute("class", "horaires");
+                                var curr_tn = document.createTextNode(heures[i-1]);
+                                curr_td.appendChild(curr_tn);
+                            }
+                            else {
+                                curr_td.setAttribute("class", "colonnes");
+                            }
                         }
+                        curr_tr.appendChild(curr_td);
                     }
-                    else {
-                        curr_tr.setAttribute("class", "lignes");
-                        if (j == 0) {
-                            curr_td.setAttribute("class", "horaires");
-                            var curr_tn = document.createTextNode(heures[i-1]);
-                            curr_td.appendChild(curr_tn);
-                        }
-                        else {
-                            curr_td.setAttribute("class", "colonnes");
-                        }
-                    }
-                    curr_tr.appendChild(curr_td);
+                    calendrier.appendChild(curr_tr);
                 }
-                calendrier.appendChild(curr_tr);
             }
+            
+            function erase_cal() {
+                document.getElementById("styleCalendrier").innerHTML = "";
+            }
+            
             //Evenements
-            {% if evenements != undefined %}
-            var evenements = {{ evenements|json_encode|raw }};
-            for (var i = 0; i < evenements.length; i++) {
-                for (var j = 0; j < 7; j++) {
-                    if (jours[j] == evenements[i].jour.split("T")[0]) {
-                        break;
-                    }
-                }
-                if (j != 7) {
-                    for (var k = 0; k < 48; k++) {
-                        var horaire = heures[k] + ":00";
-                        if (horaire >= evenements[i].debut) {
+            function print_ev(evenements) {
+                for (var i = 0; i < evenements.length; i++) {
+                    for (var j = 0; j < 7; j++) {
+                        if (jours[j] == evenements[i].jour.split("T")[0]) {
                             break;
                         }
                     }
-                    for (var l = k+1; l < 48; l++) {
-                        horaire = heures[l] + ":00";
-                        if (horaire >= evenements[i].fin) {
+                    if (j != 7) {
+                        for (var k = 0; k < 48; k++) {
+                            var horaire = heures[k] + ":00";
+                            if (horaire >= evenements[i].debut) {
+                                break;
+                            }
+                        }
+                        for (var l = k+1; l < 48; l++) {
+                            horaire = heures[l] + ":00";
+                            if (horaire >= evenements[i].fin) {
                             break;
+                            }
                         }
                     }
-                }
-                if ((j!=7) && (k != 48) && (l != 48)) {
-                    console.log("jour : " + j + ", debut : " + k + ", fin : " + l);
-                    var curr_td = document.querySelector('#styleCalendrier>tr:nth-child(' + (k+2) + ')>td:nth-child(' + (j+2) + ')');
-                    curr_td.setAttribute("class", "occupe");
-                    curr_td.setAttribute("id", "premiereCase");
-                    
-                    if(k + 1 == l)
-                        curr_td.setAttribute("id", "derniereCase");
-                    var curr_tn = document.createTextNode(evenements[i].titre + "("+evenements[i].login+")");
-                    curr_td.appendChild(curr_tn);
-                    k++;
-                    while (k != l) {
-                        curr_td = document.querySelector('#styleCalendrier>tr:nth-child(' + (k+2) + ')>td:nth-child(' + (j+2) + ')');
+                    if ((j!=7) && (k != 48) && (l != 48)) {
+                        console.log("jour : " + j + ", debut : " + k + ", fin : " + l);
+                        var curr_td = document.querySelector('#styleCalendrier>tr:nth-child(' + (k+2) + ')>td:nth-child(' + (j+2) + ')');
                         curr_td.setAttribute("class", "occupe");
+                        curr_td.setAttribute("id", "premiereCase");
+                    
                         if(k + 1 == l)
                             curr_td.setAttribute("id", "derniereCase");
+                        var curr_tn = document.createTextNode(evenements[i].titre + "("+evenements[i].login+")");
+                        curr_td.appendChild(curr_tn);
                         k++;
+                        while (k != l) {
+                            curr_td = document.querySelector('#styleCalendrier>tr:nth-child(' + (k+2) + ')>td:nth-child(' + (j+2) + ')');
+                            curr_td.setAttribute("class", "occupe");
+                            if(k + 1 == l)
+                                curr_td.setAttribute("id", "derniereCase");
+                            k++;
+                        }
                     }
                 }
             }
+            
+            //Affichage du calendrier
+            print_cal();
+            {% if evenements != undefined %}
+            var evenements = {{ evenements|json_encode|raw }};
+            print_ev(evenements);
             {% endif %}
-            //AJAX
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET",'/liste',true);
-            xhr.responseType = 'json';
-            xhr.onload=function()
-            {
-                var r = xhr.response;
-                for (var i = 0; i < r.length; i++) {
-                    console.log("Ev " + i + " :");
-                    console.log(r[i].debut);
-                    console.log(r[i].fin);
-                    console.log(r[i].jour);
-                    console.log(r[i].login);
-                    console.log(r[i].titre);
-                    console.log(r[i].id);
+            
+            //Actualisation du calendrier (AJAX)
+            function reprint_cal() {
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET",'/liste',true);
+                xhr.responseType = 'json';
+                xhr.onload=function()
+                {
+                    var evenements = xhr.response;
+                    /*for (var i = 0; i < r.length; i++) {
+                        console.log("Ev " + i + " :");
+                        console.log(evenements[i].debut);
+                        console.log(evenements[i].fin);
+                        console.log(evenements[i].jour);
+                        console.log(evenements[i].login);
+                        console.log(evenements[i].titre);
+                        console.log(evenements[i].id);
+                    }*/
+                    erase_cal();
+                    print_cal();
+                    print_ev(evenements);
+                    //console.log("Actualisation");
                 }
+                xhr.send();
             }
-            xhr.send();
+            setInterval(reprint_cal, 30000); //Actualisation toutes les 30 secondes
         </script>
         
     </body>
