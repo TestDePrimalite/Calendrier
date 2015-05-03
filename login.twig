@@ -2,15 +2,16 @@
 <html>
     <!-- Cette page correspond à la l'écran de connexion-->
     <head>
-        Page de connexion <br/>
+        <b>Page de connexion</b><br>
     </head>
     <body>
-        <b>Identifiez-vous : </b> <br/>
+        <br>
+        <b>Identifiez-vous : </b> <br><br>
         <form action="" method="POST">
-            Pseudo : <input type="text" name="login" value="Entrez votre pseudo"/> <br/>
-            Mot de passe : <input type="password" name="pass" /> <br/>
-            <input type="submit"/> <br/>
-        </form>
+            Pseudo : <input type="text" name="login" value="Entrez votre pseudo"/><br>
+            Mot de passe : <input type="password" name="pass" /> <br>
+            <input type="submit"/> 
+        </form><br>
         {% if erreur == 1 %}
             <b>Une erreur est survenue. Veuillez ré-essayer.</b>
         {% elseif erreur == 2 %}
@@ -20,5 +21,7 @@
         {% elseif erreur == 4 %}
             <b>Erreur : Aucun mot de passe n'a été rentré.</b>
         {% endif %}
+        <br>
+        <a href='/'>Retour au menu principal</a>
     </body>
 </html>
