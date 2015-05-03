@@ -10,10 +10,10 @@ var db = mysql.createConnection({
     host    : process.env.IP,
     user    : process.env.C9_USER.substr(0,16),
     password: '',
-    database: 'c9'
+    database: 'CalendrierFrancoisMikael'
 });
 
-var an_emmiter = new evts.EventEmitter();
+// var an_emmiter = new evts.EventEmitter();
 
 var session = require('express-session');
 
