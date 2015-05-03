@@ -52,7 +52,6 @@ app.all('/signup', function(req,res)
                     if(err)
                     {
                         console.log(err);
-                        //if(err.code == "ER_DUP_ENTRY")
                         res.render('signup.twig', {'erreur' : 1});
                     }
                     else if(result.length != 0)
@@ -60,8 +59,6 @@ app.all('/signup', function(req,res)
                         console.log(result);
                         req.session.login = req.body.login;
                         req.session.pass = req.body.pass;
-                        console.log(req.session.login);
-                        console.log(req.session.pass);
                         res.redirect('/');
                     }
                     else
@@ -108,8 +105,6 @@ app.all('/', function(req,res)
            else if(result.length > 0)
            {
                 console.log(result);
-                console.log(result[0]["debut"]);
-                
                 if (req.query.date_ref) {
                     res.render('calendrier.twig', {'evenements' : result, 'login' : req.session.login, 'date_ref': req.query.date_ref, 'erreur':erreur});
                 }
@@ -134,7 +129,6 @@ app.all('/login', function(req,res)
     }
     else
     {
-        console.log(req.method);
         if(req.method == "POST")
         {
             console.log("Login : " + req.body.login);
@@ -192,10 +186,8 @@ Sinon, si l'événement ne se supperpose pas avec un autre événement, n'a pas 
 possède bien un titre, alors il est inséré dans la base de donnée.*/
 app.post('/ajouter', function(req,res)
 {
-    console.log("Dans /ajouter : method = " + req.method);
      if(req.session.login == undefined)
     {
-        console.log(req.session.login);
         res.redirect('/login');
     }
     else
@@ -244,7 +236,6 @@ app.post('/ajouter', function(req,res)
                         {
                             console.log(result);
                             console.log(req.session.login);
-                            //an_emmiter.emit('nouvel_ev',result);
                             res.redirect('/');
                         }
                         else
@@ -303,7 +294,7 @@ app.get('/liste', function(req,res)
 
 /* Ce gestionnaire permet d'effacer un événement de la base de donnée. */
 app.post('/effacer', function(req, res) 
-{console.log(req.body.id);
+{
     if(req.session.login == undefined)
     {
         res.redirect('/login');

@@ -31,15 +31,15 @@
             };
         </script>
         <link rel="stylesheet" href="calendrier.css" type="text/css" />
-        Bonjour {{ login }} ! <br/>
+        Bonjour {{ login }} ! <br>
     </head>
     <body>
         <!-- Redirections vers les connection, déconexion, ou création de compte -->
         {% if login != undefined %}
-            Se déconnecter : <a href='/logout'>Cliquez ici</a><br/>
+            Se déconnecter : <a href='/logout'>Cliquez ici</a><br>
         {% else %}
-            Se connecter : <a href='/login'>Cliquez ici</a><br/>
-            Créer un compte : <a href='/signup'>Cliquez ici</a><br/>
+            Se connecter : <a href='/login'>Cliquez ici</a><br>
+            Créer un compte : <a href='/signup'>Cliquez ici</a><br>
         {% endif %}
         <!-- Ici on s'occupe d'afficher les erreurs correspondants à des valeurs -->
         {% if erreur == 1 %}
@@ -296,8 +296,8 @@
                 }
                 xhr.send();
             }
-            //Actualisation toutes les 30 secondes
-            setInterval(reprint_cal, 30000);
+            //Actualisation toutes les 10 secondes
+            setInterval(reprint_cal, 10000);
         </script>
         
     </body>
