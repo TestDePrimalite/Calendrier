@@ -87,3 +87,11 @@ td{
     text-align: center;
     font-size: 20pt;
 }
+
+#premiereCase{
+    border-top: 1px solid;
+}
+
+#derniereCase{
+    border-bottom: 1px solid;
+}
