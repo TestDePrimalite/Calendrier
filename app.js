@@ -213,7 +213,6 @@ app.post('/ajouter', function(req,res)
                 {
                     console.log(err);
                     req.session.erreur = 7;
-                    //res.render('calendrier.twig', {'erreur' : 7, 'login' : req.session.login});
                     res.redirect('/');
                 }
                 else
@@ -232,7 +231,7 @@ app.post('/ajouter', function(req,res)
                         }
                     }
                     db.query('INSERT INTO evenements VALUES (?,?,?,?,?,?)', [req.body.debut,req.body.fin,req.body.jour,req.session.login,
-                    req.body.titre,req.session.login+req.body.jour+req.body.debut],function(err,result)
+                    req.body.titre,"De "+req.body.debut+" à "+req.body.fin+" le "+req.body.jour+" ("+req.session.login+")"],function(err,result)
                     {
                         if(err)
                         {
@@ -304,28 +303,40 @@ app.get('/liste', function(req,res)
 
 /* Ce gestionnaire permet d'effacer un événement de la base de donnée. */
 app.post('/effacer', function(req, res) 
-{
-    db.query("SELECT * FROM evenements WHERE id=(?)", [req.body.id] , function(err,result)
+{console.log(req.body.id);
+    if(req.session.login == undefined)
     {
-        if(err)
+        res.redirect('/login');
+    }
+    else
+    {
+        db.query("SELECT * FROM evenements WHERE id=(?)", [req.body.id] , function(err,result)
         {
-            console.log(err);
-        }
-        else {
-            if(result.length > 0) {
-                if (result[0].login == req.session.login) {
-                    db.query("DELETE from evenements WHERE id=(?)", [req.body.id], function(err,result)
-                    {
-                        if(err)
+            if(err)
+            {
+                console.log(err);
+            }
+            else {
+                if(result.length > 0) {
+                    if (result[0].login == req.session.login) {
+                        db.query("DELETE from evenements WHERE id=(?)", [req.body.id], function(err,result)
                         {
-                            console.log(err);
-                        }
-                        res.redirect('/');
-                    });
+                            if(err)
+                            {
+                                console.log(err);
+                            }
+                            res.redirect('/');
+                        });
+                    }
+                    else 
+                    {
+                        req.session.erreur = 9;
+                    }
                 }
             }
-        }
-    });
+        });
+    }
+    
 });
 
 app.listen(process.env.PORT);

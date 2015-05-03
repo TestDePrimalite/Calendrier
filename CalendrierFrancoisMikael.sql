@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Client: 127.0.0.1
--- Généré le: Dim 03 Mai 2015 à 19:42
+-- Généré le: Dim 03 Mai 2015 à 21:03
 -- Version du serveur: 5.5.40-0ubuntu0.14.04.1
 -- Version de PHP: 5.5.9-1ubuntu4.5
 
@@ -19,6 +19,8 @@ SET time_zone = "+00:00";
 --
 -- Base de données: `CalendrierFrancoisMikael`
 --
+CREATE DATABASE IF NOT EXISTS `CalendrierFrancoisMikael` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE `CalendrierFrancoisMikael`;
 
 -- --------------------------------------------------------
 
@@ -43,8 +45,8 @@ CREATE TABLE IF NOT EXISTS `evenements` (
 --
 
 INSERT INTO `evenements` (`debut`, `fin`, `jour`, `login`, `titre`, `id`) VALUES
-('00:00:00', '03:00:00', '2015-05-07', 'Nash', 'Zbra', 'Nash2015-05-0700:00:00'),
-('04:00:00', '06:30:00', '2015-05-15', 'Nash', 'Choisissez un titre', 'Nash2015-05-1504:00:00');
+('03:30:00', '05:30:00', '2015-04-27', 'Nash', 'Test', 'De 03:30:00 à 05:30:00 le 2015-04-27 (Nash)'),
+('03:30:00', '06:30:00', '2015-04-30', 'Nash', 'Choisissez un titre', 'De 03:30:00 à 06:30:00 le 2015-04-30 (Nash)');
 
 -- --------------------------------------------------------
 

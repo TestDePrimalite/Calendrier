@@ -63,6 +63,8 @@
             <b>Erreur : Problème de recherche dans la base de données. Veuillez réessayer.</b>
         {% elseif erreur == 8 %}
             <b>Erreur : Un événement est déjà présent au niveau de cette plage horaire.</b>
+        {% elseif erreur == 9 %}
+            <b>Erreur : Vous n'êtes pas le créateur de cet événement. Interdiction de le supprimer.</b>
         {% endif %}
         <br>
         <b><div id="titre">Calendrier :</div></b> <br>
@@ -78,13 +80,25 @@
             <div class="cache" id="formulaireEffacer"><b>Voulez vous effacer cet événement? </b> <br>
                 <a id="formEffClose"></a>
                 <form action="/effacer" method="post">
-                    <input type="hidden" name="evenements" value={{result}} />
-                    <input type="submit" /> <br>
+                    <br>
+                    {% if evenements != undefined %}
+                        Evenements :
+                        
+                        <select name="id">
+                        {% for i in 0..evenements.length-1 %}
+                            <option>{{evenements[i].id}}</option>
+                        {% endfor %}
+                        </select>
+                    {% endif %}
+                    
+                    <br>
+                    <input type="submit" /> 
                 </form>
             </div>
             <div class="cache" id="formulaire"><b>Remplissez le formulaire pour ajouter un événement :</b> <br>
                 <a id="formClose"></a>
                 <form action="/ajouter" method="post">
+                    <br>
                     Titre:  <input type="text" name="titre" value="Choisissez un titre"></input><br/>
                     Jour : 
                     <select id="formjour" name="jour">
@@ -109,9 +123,11 @@
                             </option>
                         {% endfor %}
                     {% endfor %}
-                    </select><br/>
-                    <input type="submit"/> <br/>
-                </form> <br/>
+                    </select>
+                    <br>
+                    <input type="submit"/> 
+                    <br>
+                </form>
             </div>
         </table>
         <!-- Script qui va générer le calendrier puis afficher les événements -->
