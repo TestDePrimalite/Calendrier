@@ -2,25 +2,29 @@
 <html>
     <!-- Cette page correspond à la l'écran de connexion-->
     <head>
+        <link rel="stylesheet" href="calendrier.css" type="text/css" />
         <b>Page de connexion</b><br>
     </head>
     <body>
-        <br>
-        <b>Identifiez-vous : </b> <br><br>
-        <form action="" method="POST">
-            Pseudo : <input type="text" name="login" value="Entrez votre pseudo"/><br>
-            Mot de passe : <input type="password" name="pass" /> <br>
-            <input type="submit"/> 
-        </form><br>
-        {% if erreur == 1 %}
-            <b>Une erreur est survenue. Veuillez ré-essayer.</b>
-        {% elseif erreur == 2 %}
-            <b>Erreur : Mauvais pseudo ou mot de passe.</b>
-        {% elseif erreur == 3 %}
-            <b>Erreur : Aucun pseudo n'a été rentré.</b>
-        {% elseif erreur == 4 %}
-            <b>Erreur : Aucun mot de passe n'a été rentré.</b>
-        {% endif %}
+        <div class="formulaireLoginSignup">
+            <br>
+            <b class="titreFormulaire">Identifiez-vous : </b> <br><br>
+            <form action="" method="POST">
+                Pseudo : <input type="text" name="login" value="Entrez votre pseudo"/><br>
+                Mot de passe : <input type="password" name="pass" /> <br>
+                <br>
+                <input type="submit"/> 
+            </form><br>
+            {% if erreur == 1 %}
+                <b>Une erreur est survenue. Veuillez ré-essayer.</b>
+            {% elseif erreur == 2 %}
+                <b>Erreur : Mauvais pseudo ou mot de passe.</b>
+            {% elseif erreur == 3 %}
+                <b>Erreur : Aucun pseudo n'a été rentré.</b>
+            {% elseif erreur == 4 %}
+                <b>Erreur : Aucun mot de passe n'a été rentré.</b>
+            {% endif %}
+        </div>
         <br>
         <a href='/'>Retour au menu principal</a>
     </body>
