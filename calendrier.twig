@@ -51,7 +51,7 @@
         Bonjour {{ login }} ! <br/>
     </head>
     <body>
-        <div id="pageCalendrier">
+        
         {% if login != undefined %}
             Se déconnecter : <a href='/logout'>Cliquez ici</a><br/>
         {% else %}
@@ -82,21 +82,15 @@
         <a id="sem_suiv">Semaine suivante</a>
         <br>
         <table id="styleCalendrier"><div class="cache" id="formulaireEffacer"><b>Voulez vous effacer cet événement? </b> <br>
-            <a class="close">
-                <i id="formEffClose">
-                    <b>X</b>
-                </i>
-            </a>
+            <a id="formEffClose"></a>
             <form action="/effacer" method="post">
                 <input type="hidden" name="evenements" value={{result}} />
                 <input type="submit" /> <br>
             </form>
         </div>
         <div class="cache" id="formulaire"><b>Remplissez le formulaire pour ajouter un événement :</b> <br>
-            <a class="close"> <!--TODO: eviter de recharger la page lors de la fermeture du formulaire-->
-                <i id="formClose">
-                    <b>X</b>
-                </i>
+            <a id="formClose"> <!--TODO: eviter de recharger la page lors de la fermeture du formulaire-->
+                
             </a>
             <form action="/ajouter" method="post">
                 Titre:  <input type="text" name="titre" value="Choisissez un titre"></input><br/>
@@ -248,6 +242,6 @@
             }
             {% endif %}
         </script>
-        </div>
+        
     </body>
 </html>
