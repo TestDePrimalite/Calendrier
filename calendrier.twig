@@ -5,25 +5,30 @@
         var evenements = {{ evenements|json_encode|raw }};
                
             window.onload= function(){
+                var formulaire = document.getElementById("formulaire");
+                var formulaireEffacer = document.getElementById("formulaireEffacer")
                 document.getElementById("styleCalendrier").addEventListener("click",function(event)
                 {
-                    
-                    console.log(event.target.className);
-                    if(event.target.className == "close")
+                    if(event.target.className != "occupe")
                     {
-                        console.log("coucou");
-                        document.getElementById("formulaireEffacer").className="cache";
-                        document.getElementById("formulaire").className="cache";
+                         formulaire.className="";
+                         formulaireEffacer.className="cache";
                     }
-                    else if(event.target.className != "occupe" && event.target.className != "formulaire" && event.target.className != "formulaireEffacer")
-                        document.getElementById("formulaire").className="";
+                       
                     else
                     {
-                        document.getElementById("formulaireEffacer").className="";
+                        formulaireEffacer.className="";
+                        formulaire.className="cache";
                     }
-                        
                 });
-                
+                document.getElementById("formClose").addEventListener("click",function(event)
+                {
+                    formulaire.className="cache";
+                });
+                document.getElementById("formEffClose").addEventListener("click",function(event)
+                {
+                    formulaireEffacer.className="cache";
+                });
             };
             var xhr = new XMLHttpRequest();
 
@@ -46,15 +51,39 @@
         Bonjour {{ login }} ! <br/>
     </head>
     <body>
+        <div id="pageCalendrier">
         {% if login != undefined %}
             Se déconnecter : <a href='/logout'>Cliquez ici</a><br/>
         {% else %}
             Se connecter : <a href='/login'>Cliquez ici</a><br/>
             Créer un compte : <a href='/signup'>Cliquez ici</a><br/>
         {% endif %}
-        <div class="cache" id="formulaireEffacer"><b>Voulez vous effacer cet événement? </b> <br>
-            <a class="close" href="/">
-                <i class="formClose">
+        
+        {% if erreur == 1 %}
+            <b>Erreur : Date déjà utilisée.</b>
+        {% elseif erreur == 2 %}
+            <b>Erreur : Pas de titre.</b>
+        {% elseif erreur == 3 %}
+            <b>Erreur : Pas de date de début.</b>
+        {% elseif erreur == 4 %}
+            <b>Erreur : Pas de date de fin.</b>
+        {% elseif erreur == 5 %}
+            <b>Erreur : L'heure de début est après ou en même temps que l'heure de fin.</b>
+        {% elseif erreur == 6 %}
+            <b>Erreur : Aucun jour n'est rentré.</b>
+        {% elseif erreur == 7 %}
+            <b>Erreur : Problème de recherche dans la base de données. Veuillez réessayer.</b>
+        {% elseif erreur == 8 %}
+            <b>Erreur : Un événement est déjà présent au niveau de cette plage horaire.</b>
+        {% endif %}
+        <br>
+        <b><div id="titre">Calendrier :</div></b>
+        <a id="sem_prec">Semaine précédente</a>
+        <a id="sem_suiv">Semaine suivante</a>
+        <br>
+        <table id="styleCalendrier"><div class="cache" id="formulaireEffacer"><b>Voulez vous effacer cet événement? </b> <br>
+            <a class="close">
+                <i id="formEffClose">
                     <b>X</b>
                 </i>
             </a>
@@ -64,8 +93,8 @@
             </form>
         </div>
         <div class="cache" id="formulaire"><b>Remplissez le formulaire pour ajouter un événement :</b> <br>
-            <a class="close" href="/"> <!--TODO: eviter de recharger la page lors de la fermeture du formulaire-->
-                <i class="formClose">
+            <a class="close"> <!--TODO: eviter de recharger la page lors de la fermeture du formulaire-->
+                <i id="formClose">
                     <b>X</b>
                 </i>
             </a>
@@ -97,30 +126,7 @@
                 </select><br/>
                 <input type="submit"/> <br/>
             </form> <br/>
-        </div>
-        {% if erreur == 1 %}
-            <b>Erreur : Date déjà utilisée.</b>
-        {% elseif erreur == 2 %}
-            <b>Erreur : Pas de titre.</b>
-        {% elseif erreur == 3 %}
-            <b>Erreur : Pas de date de début.</b>
-        {% elseif erreur == 4 %}
-            <b>Erreur : Pas de date de fin.</b>
-        {% elseif erreur == 5 %}
-            <b>Erreur : L'heure de début est après ou en même temps que l'heure de fin.</b>
-        {% elseif erreur == 6 %}
-            <b>Erreur : Aucun jour n'est rentré.</b>
-        {% elseif erreur == 7 %}
-            <b>Erreur : Problème de recherche dans la base de données. Veuillez réessayer.</b>
-        {% elseif erreur == 8 %}
-            <b>Erreur : Un événement est déjà présent au niveau de cette plage horaire.</b>
-        {% endif %}
-        <br>
-        <b><div id="titre">Calendrier :</div></b>
-        <a id="sem_prec">Semaine précédente</a>
-        <a id="sem_suiv">Semaine suivante</a>
-        <br>
-        <table id="styleCalendrier"></table>
+        </div></table>
         <script>
             //Mois
             var mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
@@ -242,5 +248,6 @@
             }
             {% endif %}
         </script>
+        </div>
     </body>
 </html>
