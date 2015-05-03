@@ -285,7 +285,7 @@ app.get('/liste', function(req,res)
 
 app.post('/effacer', function(req, res) 
 {
-    db.query('SELECT * FROM evenements WHERE id="' + req.body.id + '"', function(err,result)
+    db.query("SELECT * FROM evenements WHERE id=(?)", [req.body.id] , function(err,result)
     {
         if(err)
         {
@@ -294,7 +294,7 @@ app.post('/effacer', function(req, res)
         else {
             if(result.length > 0) {
                 if (result[0].login == req.session.login) {
-                    db.query('DELETE from evenements WHERE id="' + req.body.id + '"', function(err,result)
+                    db.query("DELETE from evenements WHERE id=(?)", [req.body.id], function(err,result)
                     {
                         if(err)
                         {
