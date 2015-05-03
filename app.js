@@ -331,6 +331,7 @@ app.post('/effacer', function(req, res)
                     else 
                     {
                         req.session.erreur = 9;
+                        res.redirect('/');
                     }
                 }
             }
