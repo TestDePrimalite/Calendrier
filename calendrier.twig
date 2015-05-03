@@ -2,6 +2,7 @@
 <html>
     <head>
         <script>
+        // On gère ici l'ouverture des formulaires en changeant le nom de la classe des formulaires.
             window.onload= function(){
                 var formulaire = document.getElementById("formulaire");
                 var formulaireEffacer = document.getElementById("formulaireEffacer")
@@ -38,14 +39,14 @@
         Bonjour {{ login }} ! <br/>
     </head>
     <body>
-    
+        <!-- Redirections vers les connection, déconexion, ou création de compte -->
         {% if login != undefined %}
             Se déconnecter : <a href='/logout'>Cliquez ici</a><br/>
         {% else %}
             Se connecter : <a href='/login'>Cliquez ici</a><br/>
             Créer un compte : <a href='/signup'>Cliquez ici</a><br/>
         {% endif %}
-        
+        <!-- Ici on s'occupe d'afficher les erreurs correspondants à des valeurs -->
         {% if erreur == 1 %}
             <b>Erreur : Date déjà utilisée.</b>
         {% elseif erreur == 2 %}
@@ -65,12 +66,15 @@
         {% endif %}
         <br>
         <b><div id="titre">Calendrier :</div></b> <br>
+        <!-- Liens vers les semaines précédente, suivante, ou la semaine actuelle-->
         <a id="sem_prec">Semaine précédente</a>
         <a id="sem_cour" href="/">Semaine courante</a>
         <a id="sem_suiv">Semaine suivante</a>
         <br>
         <br>
         <table id="styleCalendrier">
+            <!-- Les formulaires d'effacement ou d'ajout d'événements, qui sont cachés tant qu'on ne clique pas sur une case du calendrier (Si case occupée,
+            on affiche le formulaire d'effacement d'événement, sinon le formulaire d'ajout). -->
             <div class="cache" id="formulaireEffacer"><b>Voulez vous effacer cet événement? </b> <br>
                 <a id="formEffClose"></a>
                 <form action="/effacer" method="post">
@@ -110,6 +114,7 @@
                 </form> <br/>
             </div>
         </table>
+        <!-- Script qui va générer le calendrier puis afficher les événements -->
         <script>
             //Mois
             var mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];

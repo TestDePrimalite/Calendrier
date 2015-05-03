@@ -30,6 +30,7 @@ app.engine('html', twig.__express);
 
 //TODO?: si la connection a la bdd c9 a reussie, creer les tables evenements et utilisateurs si elles n'existent pas
 
+/* Ce gestionnaire permet de créer un compte si l'utilisateur n'est pas déjà connecté. Sinon, on fait une redirection vers '/'. */
 app.all('/signup', function(req,res)
 {
     if(req.session.login != undefined)
@@ -86,6 +87,8 @@ app.all('/signup', function(req,res)
     }
 });
 
+/* Ce gestionnaire va s'occuper de rediriger vers '/ajouter' si la méthode est POST (c'est à dire qu'on a voulu ajouter un événement), sinon, il va renvoyer
+ la liste de tous les événements. */
 app.all('/', function(req,res)
 {
    if(req.method == "POST")
@@ -120,6 +123,8 @@ app.all('/', function(req,res)
    }
 });
 
+/* Ce gestionnaire permet à l'utilisteur de se connecter s'il n'est pas déjà connecté, en cherchant dans la base de donnée si les login et mot de passe
+correspondent. Si l'authentification est réussie, il redirige vers '/' en stockant les informations dans la session.*/
 app.all('/login', function(req,res)
 {
     if(req.session.login != undefined)
@@ -174,6 +179,7 @@ app.all('/login', function(req,res)
     }
 });
 
+/* Ce gestionnaire permet tout simplement de se déconnecter de la session, et redirige vers '/'. */
 app.get('/logout', function(req,res)
 {
     req.session.login = null;
@@ -181,6 +187,9 @@ app.get('/logout', function(req,res)
     res.redirect('/');
 });
 
+/* Ce gestionnaire permet d'ajouter des événements dans la base de donnée. Si l'utilisateur n'est pas connecté, il est redirigé vers '/login'.
+Sinon, si l'événement ne se supperpose pas avec un autre événement, n'a pas une date de fin inférieur a une date de début, n'a pas de durée nulle,
+possède bien un titre, alors il est inséré dans la base de donnée.*/
 app.post('/ajouter', function(req,res)
 {
     console.log("Dans /ajouter : method = " + req.method);
@@ -219,8 +228,6 @@ app.post('/ajouter', function(req,res)
                             {
                                 req.session.erreur=8;
                                 res.redirect('/');
-                                //res.render('calendrier.twig', {'erreur' : 8, 'login' : req.session.login});
-                                return;
                             }
                         }
                     }
@@ -230,8 +237,7 @@ app.post('/ajouter', function(req,res)
                         if(err)
                         {
                             console.log(err);
-                            
-                            //res.render('calendrier.twig', {'erreur' : 1, 'login' : req.session.login});
+
                             req.session.erreur = 1;
                             res.redirect('/');
                         }
@@ -239,7 +245,7 @@ app.post('/ajouter', function(req,res)
                         {
                             console.log(result);
                             console.log(req.session.login);
-                            an_emmiter.emit('nouvel_ev',result);
+                            //an_emmiter.emit('nouvel_ev',result);
                             res.redirect('/');
                         }
                         else
@@ -254,37 +260,33 @@ app.post('/ajouter', function(req,res)
         }
         else if(req.body.titre.trim() == "")
         {
-            //res.render('calendrier.twig', {'erreur' : 2, 'login' : req.session.login});
             req.session.erreur = 2;
             res.redirect('/');
         }
         else if(req.body.debut.trim() == "")
         {
-            //res.render('calendrier.twig', {'erreur' : 3, 'login' : req.session.login});
             req.session.erreur = 3;
             res.redirect('/');
         }
         else if(req.body.fin.trim() == "")
         {
-            //res.render('calendrier.twig', {'erreur' : 4, 'login' : req.session.login});
             req.session.erreur = 4;
             res.redirect('/');
         }
         else if(req.body.debut >= req.body.fin)
         {
-            //res.render('calendrier.twig', {'erreur' : 5, 'login' : req.session.login});
             req.session.erreur = 5;
             res.redirect('/');
         }
         else if(req.body.jour.trim() == "")
         {
-            //res.render('calendrier.twig', {'erreur' : 6, 'login' : req.session.login});
             req.session.erreur = 6;
             res.redirect('/');
         }
     }
 });
 
+/* Ce gestionnaire envoie les événements sous format json. */
 app.get('/liste', function(req,res)
 {
     db.query('SELECT * FROM evenements', function(err,result)
@@ -300,6 +302,7 @@ app.get('/liste', function(req,res)
     });
 });
 
+/* Ce gestionnaire permet d'effacer un événement de la base de donnée. */
 app.post('/effacer', function(req, res) 
 {
     db.query("SELECT * FROM evenements WHERE id=(?)", [req.body.id] , function(err,result)
