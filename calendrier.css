@@ -83,6 +83,12 @@ td{
     left: 10%;
 }
 
+#sem_cour{
+    position: absolute;
+    left: 50%;
+    right:50%;
+}
+
 #titre{
     text-align: center;
     font-size: 20pt;
