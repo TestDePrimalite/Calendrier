@@ -93,7 +93,8 @@ app.all('/', function(req,res)
        res.redirect('/ajouter');
    }
    else
-   {
+   {   var erreur = req.session.erreur;
+       req.session.erreur = 0;
        db.query('SELECT * FROM evenements', function(err,result)
        {
            if(err)
@@ -107,14 +108,14 @@ app.all('/', function(req,res)
                 console.log(result[0]["debut"]);
                 
                 if (req.query.date_ref) {
-                    res.render('calendrier.twig', {'evenements' : result, 'login' : req.session.login, 'date_ref': req.query.date_ref});
+                    res.render('calendrier.twig', {'evenements' : result, 'login' : req.session.login, 'date_ref': req.query.date_ref, 'erreur':erreur});
                 }
                 else {
-                    res.render('calendrier.twig', {'evenements' : result, 'login' : req.session.login});
+                    res.render('calendrier.twig', {'evenements' : result, 'login' : req.session.login, 'erreur':erreur});
                 }
            }
            else
-               res.render('calendrier.twig', {'login' : req.session.login});
+               res.render('calendrier.twig', {'login' : req.session.login, 'erreur' : erreur});
        });
    }
 });
@@ -202,7 +203,9 @@ app.post('/ajouter', function(req,res)
                 if(err)
                 {
                     console.log(err);
-                    res.render('calendrier.twig', {'erreur' : 7, 'login' : req.session.login});
+                    req.session.erreur = 7;
+                    //res.render('calendrier.twig', {'erreur' : 7, 'login' : req.session.login});
+                    res.redirect('/');
                 }
                 else
                 {
@@ -214,7 +217,9 @@ app.post('/ajouter', function(req,res)
                             if((req.body.debut <= result[j]["debut"] && req.body.fin > result[j]["debut"])
                                 || (req.body.debut > result[j]["debut"] && req.body.debut < result[j]["fin"]))
                             {
-                                res.render('calendrier.twig', {'erreur' : 8, 'login' : req.session.login});
+                                req.session.erreur=8;
+                                res.redirect('/');
+                                //res.render('calendrier.twig', {'erreur' : 8, 'login' : req.session.login});
                                 return;
                             }
                         }
@@ -225,8 +230,10 @@ app.post('/ajouter', function(req,res)
                         if(err)
                         {
                             console.log(err);
-                            //if(err.code == "ER_DUP_ENTRY")
-                            res.render('calendrier.twig', {'erreur' : 1, 'login' : req.session.login});
+                            
+                            //res.render('calendrier.twig', {'erreur' : 1, 'login' : req.session.login});
+                            req.session.erreur = 1;
+                            res.redirect('/');
                         }
                         else if(result.length != 0)
                         {
@@ -238,7 +245,7 @@ app.post('/ajouter', function(req,res)
                         else
                         {
                             console.log("Resultat vide...");
-                            res.render('calendrier.twig', {'login' : req.session.login});
+                            res.redirect('/');
                         }
                     });
                 }
@@ -247,23 +254,33 @@ app.post('/ajouter', function(req,res)
         }
         else if(req.body.titre.trim() == "")
         {
-            res.render('calendrier.twig', {'erreur' : 2, 'login' : req.session.login});
+            //res.render('calendrier.twig', {'erreur' : 2, 'login' : req.session.login});
+            req.session.erreur = 2;
+            res.redirect('/');
         }
         else if(req.body.debut.trim() == "")
         {
-            res.render('calendrier.twig', {'erreur' : 3, 'login' : req.session.login});
+            //res.render('calendrier.twig', {'erreur' : 3, 'login' : req.session.login});
+            req.session.erreur = 3;
+            res.redirect('/');
         }
         else if(req.body.fin.trim() == "")
         {
-            res.render('calendrier.twig', {'erreur' : 4, 'login' : req.session.login});
+            //res.render('calendrier.twig', {'erreur' : 4, 'login' : req.session.login});
+            req.session.erreur = 4;
+            res.redirect('/');
         }
         else if(req.body.debut >= req.body.fin)
         {
-            res.render('calendrier.twig', {'erreur' : 5, 'login' : req.session.login});
+            //res.render('calendrier.twig', {'erreur' : 5, 'login' : req.session.login});
+            req.session.erreur = 5;
+            res.redirect('/');
         }
         else if(req.body.jour.trim() == "")
         {
-            res.render('calendrier.twig', {'erreur' : 6, 'login' : req.session.login});
+            //res.render('calendrier.twig', {'erreur' : 6, 'login' : req.session.login});
+            req.session.erreur = 6;
+            res.redirect('/');
         }
     }
 });
