@@ -2,7 +2,8 @@
 <html>
     <head>
         <script>
-        // On gère ici l'ouverture des formulaires en changeant le nom de la classe des formulaires.
+        var evenements = {{ evenements|json_encode|raw }};
+               
             window.onload= function(){
                 var formulaire = document.getElementById("formulaire");
                 var formulaireEffacer = document.getElementById("formulaireEffacer")
@@ -29,24 +30,35 @@
                     formulaireEffacer.className="cache";
                 });
             };
-            /*window.onload=function(){
+            var xhr = new XMLHttpRequest();
+
+            xhr.responseType = 'json';
+            xhr.onload=function()
+            {
+                var evenements = {{ evenements|json_encode|raw }};
+                return;
+            }
+            xhr.open("GET",'/liste',true);
+            xhr.send();
+            
+            window.onload=function(){
                 setInterval(function(){
-                    
+                    var evenements = {{ evenements|json_encode|raw }};
                 },1000);
-            }*/
+            }
         </script>
         <link rel="stylesheet" href="calendrier.css" type="text/css" />
         Bonjour {{ login }} ! <br/>
     </head>
     <body>
-        <!-- Redirections vers les connection, déconexion, ou création de compte -->
+    
         {% if login != undefined %}
             Se déconnecter : <a href='/logout'>Cliquez ici</a><br/>
         {% else %}
             Se connecter : <a href='/login'>Cliquez ici</a><br/>
             Créer un compte : <a href='/signup'>Cliquez ici</a><br/>
         {% endif %}
-        <!-- Ici on s'occupe d'afficher les erreurs correspondants à des valeurs -->
+        
         {% if erreur == 1 %}
             <b>Erreur : Date déjà utilisée.</b>
         {% elseif erreur == 2 %}
@@ -63,41 +75,25 @@
             <b>Erreur : Problème de recherche dans la base de données. Veuillez réessayer.</b>
         {% elseif erreur == 8 %}
             <b>Erreur : Un événement est déjà présent au niveau de cette plage horaire.</b>
-        {% elseif erreur == 9 %}
-            <b>Erreur : Vous n'êtes pas le créateur de cet événement. Interdiction de le supprimer.</b>
         {% endif %}
         <br>
         <b><div id="titre">Calendrier :</div></b> <br>
-        <!-- Liens vers les semaines précédente, suivante, ou la semaine actuelle-->
         <a id="sem_prec">Semaine précédente</a>
         <a id="sem_cour" href="/">Semaine courante</a>
         <a id="sem_suiv">Semaine suivante</a>
         <br>
         <br>
         <table id="styleCalendrier">
-            <!-- Les formulaires d'effacement ou d'ajout d'événements, qui sont cachés tant qu'on ne clique pas sur une case du calendrier (Si case occupée,
-            on affiche le formulaire d'effacement d'événement, sinon le formulaire d'ajout). -->
             <div class="cache" id="formulaireEffacer"><b>Voulez vous effacer cet événement? </b> <br>
                 <a id="formEffClose"></a>
                 <form action="/effacer" method="post">
-                    <br>
-                    {% if evenements != undefined %}
-                        Evenements :
-                        <select name="id">
-                        {% for i in 0..evenements.length-1 %}
-                            <option>{{evenements[i].id}}</option>
-                        {% endfor %}
-                        </select>
-                    {% endif %}
-                    
-                    <br>
-                    <input type="submit" /> 
+                    <input type="hidden" name="evenements" value={{result}} />
+                    <input type="submit" /> <br>
                 </form>
             </div>
             <div class="cache" id="formulaire"><b>Remplissez le formulaire pour ajouter un événement :</b> <br>
                 <a id="formClose"></a>
                 <form action="/ajouter" method="post">
-                    <br>
                     Titre:  <input type="text" name="titre" value="Choisissez un titre"></input><br/>
                     Jour : 
                     <select id="formjour" name="jour">
@@ -122,14 +118,11 @@
                             </option>
                         {% endfor %}
                     {% endfor %}
-                    </select>
-                    <br>
-                    <input type="submit"/> 
-                    <br>
-                </form>
+                    </select><br/>
+                    <input type="submit"/> <br/>
+                </form> <br/>
             </div>
         </table>
-        <!-- Script qui va générer le calendrier puis afficher les événements -->
         <script>
             //Mois
             var mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
@@ -214,7 +207,6 @@
             }
             //Evenements
             {% if evenements != undefined %}
-            var evenements = {{ evenements|json_encode|raw }};
             for (var i = 0; i < evenements.length; i++) {
                 for (var j = 0; j < 7; j++) {
                     if (jours[j] == evenements[i].jour.split("T")[0]) {
@@ -240,10 +232,9 @@
                     var curr_td = document.querySelector('#styleCalendrier>tr:nth-child(' + (k+2) + ')>td:nth-child(' + (j+2) + ')');
                     curr_td.setAttribute("class", "occupe");
                     curr_td.setAttribute("id", "premiereCase");
-                    
                     if(k + 1 == l)
                         curr_td.setAttribute("id", "derniereCase");
-                    var curr_tn = document.createTextNode(evenements[i].titre + "("+evenements[i].login+")");
+                    var curr_tn = document.createTextNode(evenements[i].titre);
                     curr_td.appendChild(curr_tn);
                     k++;
                     while (k != l) {
@@ -256,24 +247,6 @@
                 }
             }
             {% endif %}
-            //AJAX
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET",'/liste',true);
-            xhr.responseType = 'json';
-            xhr.onload=function()
-            {
-                var r = xhr.response;
-                for (var i = 0; i < r.length; i++) {
-                    console.log("Ev " + i + " :");
-                    console.log(r[i].debut);
-                    console.log(r[i].fin);
-                    console.log(r[i].jour);
-                    console.log(r[i].login);
-                    console.log(r[i].titre);
-                    console.log(r[i].id);
-                }
-            }
-            xhr.send();
         </script>
         
     </body>
