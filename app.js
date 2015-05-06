@@ -279,16 +279,26 @@ app.post('/ajouter', function(req,res)
 /* Ce gestionnaire envoie les événements sous format json. */
 app.get('/liste', function(req,res)
 {
-    db.query('SELECT * FROM evenements', function(err,result)
-    {
-        if(err)
+    res.set({
+        'Content-type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive'
+    });
+    res.writeHead(200);
+    var timer = setInterval(function(){
+        db.query('SELECT * FROM evenements', function(err,result)
         {
-            console.log(err);
-        }
-        else
-        {
-            res.json(result);
-        }
+            if(err)
+            {
+                console.log(err);
+            }
+            res.write('event: evenements\n');
+            res.write('data: ' + JSON.stringify(result) + '\n\n');
+        });
+    }, 10000);
+    
+    req.on('close', function(){
+       clearInterval(timer);
     });
 });
 

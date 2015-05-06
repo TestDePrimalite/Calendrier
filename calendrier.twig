@@ -284,7 +284,7 @@
             var evenements = {{ evenements|json_encode|raw }};
             print_ev(evenements);
             {% endif %}
-            
+            /*
             //Actualisation du calendrier (AJAX)
             function reprint_cal() {
                 var xhr = new XMLHttpRequest();
@@ -293,7 +293,7 @@
                 xhr.onload=function()
                 {
                     var evenements = xhr.response;
-                    /*for (var i = 0; i < r.length; i++) {
+                    for (var i = 0; i < r.length; i++) {
                         console.log("Ev " + i + " :");
                         console.log(evenements[i].debut);
                         console.log(evenements[i].fin);
@@ -301,7 +301,7 @@
                         console.log(evenements[i].login);
                         console.log(evenements[i].titre);
                         console.log(evenements[i].id);
-                    }*/
+                    }
                     erase_cal();
                     print_cal();
                     print_ev(evenements);
@@ -311,6 +311,16 @@
             }
             //Actualisation toutes les 10 secondes
             setInterval(reprint_cal, 10000);
+            */
+            var evt = new EventSource('/liste');
+            
+            evt.addEventListener('evenements', function(e)
+            {
+                var ev = JSON.parse(e.data);
+                erase_cal();
+                print_cal();
+                print_ev(ev);
+            });
         </script>
         
     </body>
