@@ -16,6 +16,7 @@ var db = mysql.createConnection({
 // var an_emmiter = new evts.EventEmitter();
 
 var session = require('express-session');
+var an_emmiter = new evts.EventEmitter();
 
 app
     .use(bodyP.json())
@@ -234,6 +235,7 @@ app.post('/ajouter', function(req,res)
                         }
                         else if(result.length != 0)
                         {
+                            an_emmiter.emit('/liste');
                             console.log(result);
                             console.log(req.session.login);
                             res.redirect('/');
@@ -285,7 +287,7 @@ app.get('/liste', function(req,res)
         'Connection': 'keep-alive'
     });
     res.writeHead(200);
-    var timer = setInterval(function(){
+    an_emmiter.on('/liste',function(){
         db.query('SELECT * FROM evenements', function(err,result)
         {
             if(err)
@@ -295,10 +297,6 @@ app.get('/liste', function(req,res)
             res.write('event: evenements\n');
             res.write('data: ' + JSON.stringify(result) + '\n\n');
         });
-    }, 10000);
-    
-    req.on('close', function(){
-       clearInterval(timer);
     });
 });
 
@@ -326,6 +324,7 @@ app.post('/effacer', function(req, res)
                             {
                                 console.log(err);
                             }
+                            an_emmiter.emit('/liste');
                             res.redirect('/');
                         });
                     }
