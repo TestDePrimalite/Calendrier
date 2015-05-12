@@ -70,23 +70,11 @@
                     </select><br/>
                     Début : 
                     <select id="DEBUT_AJOUT" name="debut">
-                    {% for j in 0..23 %}
-                        {% for i in 0..1 %}
-                            <option>
-                            {% if j < 10%}0{% endif %}{{j}}:{% if i < 1 %}0{% endif %}{{i*30}}:00
-                            </option>
-                        {% endfor %}
-                    {% endfor %}
+                        
                     </select><br/>
                     Fin : 
                     <select id="FIN_AJOUT" name="fin">
-                    {% for j in 0..23 %}
-                        {% for i in 0..1 %}
-                            <option>
-                            {% if j < 10%}0{% endif %}{{j}}:{% if i < 1 %}0{% endif %}{{i*30}}:00
-                            </option>
-                        {% endfor %}
-                    {% endfor %}
+                    
                     </select>
                     <br>
                     <input type="submit"/> 
@@ -103,25 +91,62 @@
                 var formulaireEffacer = document.getElementById("formulaireEffacer")
                 document.getElementById("styleCalendrier").addEventListener("click",function(event)
                 {
-                    console.log(cal[event.target.dataset.row][event.target.dataset.column]);
-                    if(event.target.className != "occupe")
+                    var row = event.target.dataset.row;
+                    var column = event.target.dataset.column;
+                    if(row != 0 && column != 0)
                     {
-                         formulaire.className="";
-                         formulaireEffacer.className="cache";
+                        if(event.target.className != "occupe")
+                        {
+                            formulaire.className="";
+                            formulaireEffacer.className="cache";
+                            // Generation de la case debut
+                            var parent_debut = document.querySelector("#DEBUT_AJOUT");
+                            var a_eff_debut = document.querySelector("#DEBUT_AJOUT option");
+                            if(a_eff_debut)
+                                parent_debut.removeChild(a_eff_debut);
+                            var option_debut = document.createElement('option');
+                            option_debut.innerHTML = cal[row][0].innerHTML + ":00";
+                            parent_debut.appendChild(option_debut);
+                            
+                            // Génération de la case fin
+                            var parent_fin = document.querySelector("#FIN_AJOUT");
+                            var a_eff_fin = document.querySelectorAll("#FIN_AJOUT option");
+                            if(a_eff_fin)
+                            {
+                                for(var i = 0; i < a_eff_fin.length; i++)
+                                    parent_fin.removeChild(a_eff_fin[i]);
+                            }
+                            for(var i = parseInt(row) + 1; i < cal.length; i++)
+                            {
+                                var option_fin = document.createElement('option');
+                                option_fin.innerHTML = cal[i][0].innerHTML + ":00";
+                                parent_fin.appendChild(option_fin);
+                            }
+                            
+                            // Génération du jour
+                            var parent_jour = document.querySelector("#formjour");
+                            var a_eff_jour = document.querySelector('#formjour option');
+                            if(a_eff_jour)
+                                parent_jour.removeChild(a_eff_jour);
+                            var option_jour = document.createElement('option');
+                            option_jour.innerHTML = jours[column-1];
+                            parent_jour.appendChild(option_jour);
+                            
+                        }
+                        else
+                        {
+                            formulaireEffacer.className="";
+                            formulaire.className="cache";
+                            var parent = document.querySelector("#ID_EFFACE");
+                            var a_eff = document.querySelector("#ID_EFFACE option");
+                            if(a_eff)
+                                parent.removeChild(a_eff);
+                            var option = document.createElement('option');
+                            option.innerHTML = cal[event.target.dataset.row][event.target.dataset.column];
+                            parent.appendChild(option);
+                        }
                     }
-                           
-                    else
-                    {
-                        formulaireEffacer.className="";
-                        formulaire.className="cache";
-                        var parent = document.querySelector("#ID_EFFACE");
-                        var a_eff = document.querySelector("#ID_EFFACE option");
-                        if(a_eff)
-                            parent.removeChild(a_eff);
-                        var option = document.createElement('option');
-                        option.innerHTML = cal[event.target.dataset.row][event.target.dataset.column];
-                        parent.appendChild(option);
-                    }
+                    
                 });
                 document.getElementById("formClose").addEventListener("click",function(event)
                 {
@@ -154,17 +179,13 @@
             console.log("d : " + d.toDateString());
             
             //Ajout des options de jours pour l'ajout d'un evenement
-            var formjour = document.getElementById("formjour");
+
             var dates = []; //tableau d'objets Date pour les dates de la semaine
             var jours = []; //tableau de strings de dates de la semaine sous la forme YYYY-MM-DD
             for (var i = 0; i < 7; i++) {
                 dates[i] = new Date(d.getFullYear(), d.getMonth(), d.getDate());
                 console.log("dates[" + i + "] : " + dates[i].toDateString());
-                var curr_opt = document.createElement("option");
                 jours[i] = d.getFullYear() + '-' + (d.getMonth()+1<10?'0':'') + (d.getMonth()+1) + '-' + (d.getDate()<10?'0':'') + d.getDate();
-                var curr_tn = document.createTextNode(jours[i]);
-                curr_opt.appendChild(curr_tn);
-                formjour.appendChild(curr_opt);
                 d.setDate(d.getDate() + 1);
             }
             
