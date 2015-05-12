@@ -91,7 +91,7 @@ app.get('/', function(req,res)
 {
    
      var erreur = req.session.erreur;
-       req.session.erreur = 0;console.log(erreur + " ICI ERREUR");
+       req.session.erreur = 0;
        db.query('SELECT * FROM evenements', function(err,result)
        {
            if(err)
