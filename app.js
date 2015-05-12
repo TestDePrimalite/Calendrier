@@ -89,28 +89,25 @@ app.all('/signup', function(req,res)
  la liste de tous les événements. */
 app.get('/', function(req,res)
 {
-   
-     var erreur = req.session.erreur;
-       req.session.erreur = 0;
        db.query('SELECT * FROM evenements', function(err,result)
        {
            if(err)
            {
                console.log(err);
-               res.render('calendrier.twig', {'erreur' : 7, 'login': req.session.login});   // Probleme 7: pb recherche BD
+               res.render('calendrier.twig', {'erreur' : "Erreur : Problème de recherche dans la base de donnée", 'login': req.session.login});   // Probleme 7: pb recherche BD
            }
            else if(result.length > 0)
            {
                 console.log(result);
                 if (req.query.date_ref) {
-                    res.render('calendrier.twig', {'evenements' : result, 'login' : req.session.login, 'date_ref': req.query.date_ref, 'erreur':erreur});
+                    res.render('calendrier.twig', {'evenements' : result, 'login' : req.session.login, 'date_ref': req.query.date_ref});
                 }
                 else {
-                    res.render('calendrier.twig', {'evenements' : result, 'login' : req.session.login, 'erreur':erreur});
+                    res.render('calendrier.twig', {'evenements' : result, 'login' : req.session.login});
                 }
            }
            else
-               res.render('calendrier.twig', {'login' : req.session.login, 'erreur' : erreur});
+               res.render('calendrier.twig', {'login' : req.session.login});
        });
    
 });
@@ -201,8 +198,6 @@ app.post('/ajouter', function(req,res)
                 if(err)
                 {
                     console.log(err);
-                    //req.session.erreur = 7;
-                    //res.redirect('/');
                     return res.send("Erreur : Problème de recherche dans la base de données. Veuillez réessayer.");
                 }
                 else
@@ -215,8 +210,6 @@ app.post('/ajouter', function(req,res)
                             if((req.body.debut <= result[j]["debut"] && req.body.fin > result[j]["debut"])
                                 || (req.body.debut > result[j]["debut"] && req.body.debut < result[j]["fin"]))
                             {
-                               // req.session.erreur=8;
-                                //res.redirect('/');
                                 return res.send("Erreur : Un événement est déjà présent au niveau de cette plage horaire.");
                             }
                         }
@@ -227,9 +220,6 @@ app.post('/ajouter', function(req,res)
                         if(err)
                         {
                             console.log(err);
-
-                            //.session.erreur = 1;
-                            //res.redirect('/');
                             return res.send("Erreur : Date déjà utilisée.");
                         }
                         else if(result.length != 0)
@@ -237,13 +227,11 @@ app.post('/ajouter', function(req,res)
                             an_emmiter.emit('/liste');
                             console.log(result);
                             console.log(req.session.login);
-                            //res.redirect('/');
                             return res.send("L'événement a bien été ajouté.");
                         }
                         else
                         {
                             console.log("Resultat vide...");
-                            //res.redirect('/');
                             return res.send("Rien n'a été inséré dans la base de donnée.");
                         }
                     });
@@ -253,32 +241,22 @@ app.post('/ajouter', function(req,res)
         }
         else if(req.body.titre.trim() == "")
         {
-            //req.session.erreur = 2;
-            //res.redirect('/');
             return res.send("Votre titre est vide.");
         }
         else if(req.body.debut.trim() == "")
         {
-            //req.session.erreur = 3;
-            //res.redirect('/');
             return res.send("Aucune date de début n'a été entrée.");
         }
         else if(req.body.fin.trim() == "")
         {
-            //req.session.erreur = 4;
-            //res.redirect('/');
             return res.send("Aucune date de fin n'a été entrée.");
         }
         else if(req.body.debut >= req.body.fin)
         {
-            //req.session.erreur = 5;
-            //res.redirect('/');
             return res.send("La date de début est supérieur ou égal à la date de fin.");
         }
         else if(req.body.jour.trim() == "")
         {
-            //req.session.erreur = 6;
-            //res.redirect('/');
             return res.send("Aucune jour n'a été entré.");
         }
     }
@@ -334,7 +312,6 @@ app.post('/effacer', function(req, res)
                             else
                             {
                                 an_emmiter.emit('/liste');
-                                //res.redirect('/');
                                 res.send("L'événement a bien été supprimé.");
                             }
                             
@@ -342,8 +319,6 @@ app.post('/effacer', function(req, res)
                     }
                     else 
                     {
-                        //req.session.erreur = 9;
-                        //res.redirect('/');
                         return res.send("Erreur : Vous n'êtes pas le créateur de cet événement.");
                     }
                 }

@@ -13,24 +13,8 @@
             Créer un compte : <a href='/signup'>Cliquez ici</a><br>
         {% endif %}
         <!-- Ici on s'occupe d'afficher les erreurs correspondants à des valeurs -->
-        {% if erreur == 1 %}
-            <b>Erreur : Date déjà utilisée.</b>
-        {% elseif erreur == 2 %}
-            <b>Erreur : Pas de titre.</b>
-        {% elseif erreur == 3 %}
-            <b>Erreur : Pas de date de début.</b>
-        {% elseif erreur == 4 %}
-            <b>Erreur : Pas de date de fin.</b>
-        {% elseif erreur == 5 %}
-            <b>Erreur : L'heure de début est après ou en même temps que l'heure de fin.</b>
-        {% elseif erreur == 6 %}
-            <b>Erreur : Aucun jour n'est rentré.</b>
-        {% elseif erreur == 7 %}
-            <b>Erreur : Problème de recherche dans la base de données. Veuillez réessayer.</b>
-        {% elseif erreur == 8 %}
-            <b>Erreur : Un événement est déjà présent au niveau de cette plage horaire.</b>
-        {% elseif erreur == 9 %}
-            <b>Erreur : Vous n'êtes pas le créateur de cet événement. Interdiction de le supprimer.</b>
+        {% if erreur != undefined %}
+            <b>{{erreur}}</b>
         {% endif %}
         <br>
         <b><div id="titre">Calendrier :</div></b> <br>
@@ -70,17 +54,16 @@
                     </select><br/>
                     Début : 
                     <select id="DEBUT_AJOUT" name="debut">
-                        
                     </select><br/>
                     Fin : 
                     <select id="FIN_AJOUT" name="fin">
-                    
                     </select>
                     <br>
                     <input type="submit"/> 
                     <br>
                 </form>
             </div>
+            <div class="cache" id="message_popup"></div>
         </table>
         <!-- Script qui va générer le calendrier puis afficher les événements -->
         <script>
@@ -89,16 +72,22 @@
             window.onload= function(){
                 var formulaire = document.getElementById("formulaire");
                 var formulaireEffacer = document.getElementById("formulaireEffacer")
+                document.getElementById("message_popup").addEventListener("click",function(event)
+                {
+                   event.target.className="cache"; 
+                });
                 document.getElementById("styleCalendrier").addEventListener("click",function(event)
                 {
                     var row = event.target.dataset.row;
                     var column = event.target.dataset.column;
+                    document.querySelector("#message_popup").className="cache";
                     if(row != 0 && column != 0)
                     {
                         if(event.target.className != "occupe")
                         {
                             formulaire.className="";
                             formulaireEffacer.className="cache";
+                            
                             // Generation de la case debut
                             var parent_debut = document.querySelector("#DEBUT_AJOUT");
                             var a_eff_debut = document.querySelector("#DEBUT_AJOUT option");
@@ -122,6 +111,9 @@
                                 option_fin.innerHTML = cal[i][0].innerHTML + ":00";
                                 parent_fin.appendChild(option_fin);
                             }
+                            var option_fin = document.createElement('option');
+                            option_fin.innerHTML = "23:59:59";
+                            parent_fin.appendChild(option_fin);
                             
                             // Génération du jour
                             var parent_jour = document.querySelector("#formjour");
@@ -275,7 +267,7 @@
                             }
                         }
                     }
-                    if ((j!=7) && (k != 48) && (l != 48)) {
+                    if ((j!=7) && (k != 48)) {
                         console.log("jour : " + j + ", debut : " + k + ", fin : " + l);
                         var curr_td = document.querySelector('#styleCalendrier>tr:nth-child(' + (k+2) + ')>td:nth-child(' + (j+2) + ')');
                         curr_td.setAttribute("class", "occupe");
@@ -298,7 +290,6 @@
                             curr_td = document.querySelector('#styleCalendrier>tr:nth-child(' + (k+2) + ')>td:nth-child(' + (j+2) + ')');
                             curr_td.setAttribute("class", "occupe");
                             cal[k+1][j+1] = evenements[i].id;
-                            //curr_td.setAttribute("id", evenements[i].id);
                             if(k + 1 == l)
                             {
                                 curr_td.setAttribute("id", "derniereCase");
@@ -374,29 +365,33 @@
                 xhr.onload=function()
                 {console.log(xhr.response);
                     if(xhr.response != undefined)
-                        window.alert(xhr.response);
+                    {
+                        var message = document.querySelector("#message_popup");
+                        message.innerHTML=xhr.response;
+                        message.className="";
+                    }
                 }
             }
             
             function effaceEv()
             {
-                if(confirm("Etes-vous dûr de vouloir effacer cet événement? "))
-                {
-                    var xhr = new XMLHttpRequest();
-                    xhr.open("POST",'/effacer',true);
-                    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST",'/effacer',true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
                     
-                    var id = encodeURIComponent(document.getElementById("ID_EFFACE").value);
-                    document.getElementById("formulaireEffacer").className="cache";
-                    xhr.send("id="+id);
-                    xhr.onload=function()
+                var id = encodeURIComponent(document.getElementById("ID_EFFACE").value);
+                document.getElementById("formulaireEffacer").className="cache";
+                xhr.send("id="+id);
+                xhr.onload=function()
+                {
+                    console.log(xhr.response);
+                    if(xhr.response != undefined)
                     {
-                        console.log(xhr.response);
-                        if(xhr.response != undefined)
-                            window.alert(xhr.response);
+                        var message = document.querySelector("#message_popup");
+                        message.innerHTML=xhr.response;
+                        message.className="";
                     }
                 }
-                
             }
         </script>
     </body>
