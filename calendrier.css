@@ -29,23 +29,25 @@ td{
 #formulaire
 {
    text-align: center;
-   margin: 8% 10% 20% 30%;
+   margin: 2% 10% 20% 30%;
    width: 40%;
    position: fixed;
    background-color: white;
    border: 1px solid;
    border-color: black;
+   padding: 1em;
 }
 
 #formulaireEffacer
 {
    text-align: center;
-   margin: 8% 10% 20% 30%;
+   margin: 2% 10% 20% 30%;
    width: 30%;
    position: fixed;
    background-color: white;
    border: 1px solid;
    border-color: black;
+   padding: 1em;
 }
 
 .cache

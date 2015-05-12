@@ -1,35 +1,6 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <script>
-        // On gère ici l'ouverture des formulaires en changeant le nom de la classe des formulaires.
-            window.onload= function(){
-                var formulaire = document.getElementById("formulaire");
-                var formulaireEffacer = document.getElementById("formulaireEffacer")
-                document.getElementById("styleCalendrier").addEventListener("click",function(event)
-                {
-                    if(event.target.className != "occupe")
-                    {
-                         formulaire.className="";
-                         formulaireEffacer.className="cache";
-                    }
-                       
-                    else
-                    {
-                        formulaireEffacer.className="";
-                        formulaire.className="cache";
-                    }
-                });
-                document.getElementById("formClose").addEventListener("click",function(event)
-                {
-                    formulaire.className="cache";
-                });
-                document.getElementById("formEffClose").addEventListener("click",function(event)
-                {
-                    formulaireEffacer.className="cache";
-                });
-            };
-        </script>
         <link rel="stylesheet" href="calendrier.css" type="text/css" />
         Bonjour {{ login }} ! <br>
     </head>
@@ -74,15 +45,13 @@
             on affiche le formulaire d'effacement d'événement, sinon le formulaire d'ajout). -->
             <div class="cache" id="formulaireEffacer"><b>Voulez vous effacer cet événement? </b> <br>
                 <a id="formEffClose"></a>
-                <form action="/effacer" method="post">
+                <form action="javascript:effaceEv();">
                     <br>
                     {% if evenements != undefined %}
-                        Evenements :
+                        Evenement :
                         
-                        <select name="id">
-                        {% for i in 0..evenements.length-1 %}
-                            <option>{{evenements[i].id}}</option>
-                        {% endfor %}
+                        <select id="ID_EFFACE" name="id">
+                            <!--<option>Ajout par javascript</option>-->
                         </select>
                     {% endif %}
                     
@@ -92,15 +61,15 @@
             </div>
             <div class="cache" id="formulaire"><b>Remplissez le formulaire pour ajouter un événement :</b> <br>
                 <a id="formClose"></a>
-                <form action="/ajouter" method="post">
+                <form action="javascript:ajoutEv();">
                     <br>
-                    Titre:  <input type="text" name="titre" value="Choisissez un titre"></input><br/>
+                    Titre:  <input id="TITRE_AJOUT" type="text" name="titre" value="Choisissez un titre"></input><br/>
                     Jour : 
                     <select id="formjour" name="jour">
                         <!--<option>Ajout par javascript</option>-->
                     </select><br/>
                     Début : 
-                    <select name="debut">
+                    <select id="DEBUT_AJOUT" name="debut">
                     {% for j in 0..23 %}
                         {% for i in 0..1 %}
                             <option>
@@ -110,7 +79,7 @@
                     {% endfor %}
                     </select><br/>
                     Fin : 
-                    <select name="fin">
+                    <select id="FIN_AJOUT" name="fin">
                     {% for j in 0..23 %}
                         {% for i in 0..1 %}
                             <option>
@@ -127,6 +96,44 @@
         </table>
         <!-- Script qui va générer le calendrier puis afficher les événements -->
         <script>
+            
+            // On gère ici l'ouverture des formulaires en changeant le nom de la classe des formulaires.
+            window.onload= function(){
+                var formulaire = document.getElementById("formulaire");
+                var formulaireEffacer = document.getElementById("formulaireEffacer")
+                document.getElementById("styleCalendrier").addEventListener("click",function(event)
+                {
+                    console.log(cal[event.target.dataset.row][event.target.dataset.column]);
+                    if(event.target.className != "occupe")
+                    {
+                         formulaire.className="";
+                         formulaireEffacer.className="cache";
+                    }
+                           
+                    else
+                    {
+                        formulaireEffacer.className="";
+                        formulaire.className="cache";
+                        var parent = document.querySelector("#ID_EFFACE");
+                        var a_eff = document.querySelector("#ID_EFFACE option");
+                        if(a_eff)
+                            parent.removeChild(a_eff);
+                        var option = document.createElement('option');
+                        option.innerHTML = cal[event.target.dataset.row][event.target.dataset.column];
+                        parent.appendChild(option);
+                    }
+                });
+                document.getElementById("formClose").addEventListener("click",function(event)
+                {
+                    formulaire.className="cache";
+                });
+                document.getElementById("formEffClose").addEventListener("click",function(event)
+                {
+                    
+                    formulaireEffacer.className="cache";
+                });
+            };
+            var cal = [];
             //Mois
             var mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
             
@@ -188,9 +195,13 @@
             function print_cal() {
                 var calendrier = document.getElementById("styleCalendrier");
                 for (var i = 0; i < 49; i++) {
+                    cal[i] = [];
                     curr_tr = document.createElement("tr");
                     for (var j = 0; j < 8; j++) {
                         var curr_td = document.createElement("td");
+                        curr_td.dataset.column = j;
+                        curr_td.dataset.row = i;
+                        cal[i][j] = curr_td;
                         if (i == 0) {
                             if (j == 0) {
                                 curr_td.setAttribute("id", "vide");
@@ -248,7 +259,7 @@
                         var curr_td = document.querySelector('#styleCalendrier>tr:nth-child(' + (k+2) + ')>td:nth-child(' + (j+2) + ')');
                         curr_td.setAttribute("class", "occupe");
                         curr_td.setAttribute("id", "premiereCase");
-          
+                        cal[k+1][j+1] = evenements[i].id;
                         if(k + 1 == l)
                         {
                             curr_td.setAttribute("id", "derniereCase");
@@ -265,7 +276,8 @@
                         while (k != l) {
                             curr_td = document.querySelector('#styleCalendrier>tr:nth-child(' + (k+2) + ')>td:nth-child(' + (j+2) + ')');
                             curr_td.setAttribute("class", "occupe");
-                            curr_td.setAttribute("id", evenements[i].id);
+                            cal[k+1][j+1] = evenements[i].id;
+                            //curr_td.setAttribute("id", evenements[i].id);
                             if(k + 1 == l)
                             {
                                 curr_td.setAttribute("id", "derniereCase");
@@ -312,7 +324,10 @@
             //Actualisation toutes les 10 secondes
             setInterval(reprint_cal, 10000);
             */
+            
             var evt = new EventSource('/liste');
+            
+            
             
             evt.addEventListener('evenements', function(e)
             {
@@ -321,7 +336,47 @@
                 print_cal();
                 print_ev(ev);
             });
+            
+            function ajoutEv()
+            {
+                
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST",'/ajouter',true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                
+                var titre = encodeURIComponent(document.getElementById("TITRE_AJOUT").value);
+                var jour = encodeURIComponent(document.getElementById("formjour").value);
+                var debut = encodeURIComponent(document.getElementById("DEBUT_AJOUT").value);
+                var fin = encodeURIComponent(document.getElementById("FIN_AJOUT").value);
+                document.getElementById("formulaire").className="cache";
+                xhr.send("titre="+titre+"&jour="+jour+"&debut="+debut+"&fin="+fin);
+                xhr.onload=function()
+                {console.log(xhr.response);
+                    if(xhr.response != undefined)
+                        window.alert(xhr.response);
+                }
+            }
+            
+            function effaceEv()
+            {
+                if(confirm("Etes-vous dûr de vouloir effacer cet événement? "))
+                {
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("POST",'/effacer',true);
+                    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                    
+                    var id = encodeURIComponent(document.getElementById("ID_EFFACE").value);
+                    document.getElementById("formulaireEffacer").className="cache";
+                    xhr.send("id="+id);
+                    xhr.onload=function()
+                    {
+                        console.log(xhr.response);
+                        if(xhr.response != undefined)
+                            window.alert(xhr.response);
+                    }
+                }
+                
+            }
         </script>
-        
     </body>
 </html>

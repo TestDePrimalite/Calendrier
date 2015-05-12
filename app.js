@@ -87,15 +87,11 @@ app.all('/signup', function(req,res)
 
 /* Ce gestionnaire va s'occuper de rediriger vers '/ajouter' si la méthode est POST (c'est à dire qu'on a voulu ajouter un événement), sinon, il va renvoyer
  la liste de tous les événements. */
-app.all('/', function(req,res)
+app.get('/', function(req,res)
 {
-   if(req.method == "POST")
-   {
-       res.redirect('/ajouter');
-   }
-   else
-   {   var erreur = req.session.erreur;
-       req.session.erreur = 0;
+   
+     var erreur = req.session.erreur;
+       req.session.erreur = 0;console.log(erreur + " ICI ERREUR");
        db.query('SELECT * FROM evenements', function(err,result)
        {
            if(err)
@@ -116,7 +112,7 @@ app.all('/', function(req,res)
            else
                res.render('calendrier.twig', {'login' : req.session.login, 'erreur' : erreur});
        });
-   }
+   
 });
 
 /* Ce gestionnaire permet à l'utilisteur de se connecter s'il n'est pas déjà connecté, en cherchant dans la base de donnée si les login et mot de passe
@@ -186,10 +182,10 @@ app.get('/logout', function(req,res)
 Sinon, si l'événement ne se supperpose pas avec un autre événement, n'a pas une date de fin inférieur a une date de début, n'a pas de durée nulle,
 possède bien un titre, alors il est inséré dans la base de donnée.*/
 app.post('/ajouter', function(req,res)
-{
+{console.log(req.session.login);
      if(req.session.login == undefined)
     {
-        res.redirect('/login');
+        return res.send("Erreur : Vous n'êtes pas connecté.");
     }
     else
     {
@@ -197,7 +193,7 @@ app.post('/ajouter', function(req,res)
         console.log("Debut " + req.body.debut);
         console.log("Fin " + req.body.fin);
         console.log("Login : " + req.session.login);
-        if(req.body.titre.trim() != "" && req.body.debut.trim() != "" && req.body.fin.trim() && req.body.debut < req.body.fin
+        if(req.body.titre.trim() != "" && req.body.debut.trim() != "" && req.body.fin.trim()!= "" && req.body.debut < req.body.fin
             && req.body.jour.trim() != "")
         {
             db.query('SELECT * FROM evenements WHERE jour=(?)', [req.body.jour], function(err,result)
@@ -205,8 +201,9 @@ app.post('/ajouter', function(req,res)
                 if(err)
                 {
                     console.log(err);
-                    req.session.erreur = 7;
-                    res.redirect('/');
+                    //req.session.erreur = 7;
+                    //res.redirect('/');
+                    return res.send("Erreur : Problème de recherche dans la base de données. Veuillez réessayer.");
                 }
                 else
                 {
@@ -218,8 +215,9 @@ app.post('/ajouter', function(req,res)
                             if((req.body.debut <= result[j]["debut"] && req.body.fin > result[j]["debut"])
                                 || (req.body.debut > result[j]["debut"] && req.body.debut < result[j]["fin"]))
                             {
-                                req.session.erreur=8;
-                                res.redirect('/');
+                               // req.session.erreur=8;
+                                //res.redirect('/');
+                                return res.send("Erreur : Un événement est déjà présent au niveau de cette plage horaire.");
                             }
                         }
                     }
@@ -230,20 +228,23 @@ app.post('/ajouter', function(req,res)
                         {
                             console.log(err);
 
-                            req.session.erreur = 1;
-                            res.redirect('/');
+                            //.session.erreur = 1;
+                            //res.redirect('/');
+                            return res.send("Erreur : Date déjà utilisée.");
                         }
                         else if(result.length != 0)
                         {
                             an_emmiter.emit('/liste');
                             console.log(result);
                             console.log(req.session.login);
-                            res.redirect('/');
+                            //res.redirect('/');
+                            return res.send("L'événement a bien été ajouté.");
                         }
                         else
                         {
                             console.log("Resultat vide...");
-                            res.redirect('/');
+                            //res.redirect('/');
+                            return res.send("Rien n'a été inséré dans la base de donnée.");
                         }
                     });
                 }
@@ -252,28 +253,33 @@ app.post('/ajouter', function(req,res)
         }
         else if(req.body.titre.trim() == "")
         {
-            req.session.erreur = 2;
-            res.redirect('/');
+            //req.session.erreur = 2;
+            //res.redirect('/');
+            return res.send("Votre titre est vide.");
         }
         else if(req.body.debut.trim() == "")
         {
-            req.session.erreur = 3;
-            res.redirect('/');
+            //req.session.erreur = 3;
+            //res.redirect('/');
+            return res.send("Aucune date de début n'a été entrée.");
         }
         else if(req.body.fin.trim() == "")
         {
-            req.session.erreur = 4;
-            res.redirect('/');
+            //req.session.erreur = 4;
+            //res.redirect('/');
+            return res.send("Aucune date de fin n'a été entrée.");
         }
         else if(req.body.debut >= req.body.fin)
         {
-            req.session.erreur = 5;
-            res.redirect('/');
+            //req.session.erreur = 5;
+            //res.redirect('/');
+            return res.send("La date de début est supérieur ou égal à la date de fin.");
         }
         else if(req.body.jour.trim() == "")
         {
-            req.session.erreur = 6;
-            res.redirect('/');
+            //req.session.erreur = 6;
+            //res.redirect('/');
+            return res.send("Aucune jour n'a été entré.");
         }
     }
 });
@@ -305,7 +311,7 @@ app.post('/effacer', function(req, res)
 {
     if(req.session.login == undefined)
     {
-        res.redirect('/login');
+        return res.send("Erreur : vous n'êtes pas connecté.");
     }
     else
     {
@@ -314,6 +320,7 @@ app.post('/effacer', function(req, res)
             if(err)
             {
                 console.log(err);
+                return res.send("Erreur : Problème de recherche dans la base de donnée." + err);
             }
             else {
                 if(result.length > 0) {
@@ -322,16 +329,22 @@ app.post('/effacer', function(req, res)
                         {
                             if(err)
                             {
-                                console.log(err);
+                                return res.send(err);
                             }
-                            an_emmiter.emit('/liste');
-                            res.redirect('/');
+                            else
+                            {
+                                an_emmiter.emit('/liste');
+                                //res.redirect('/');
+                                res.send("L'événement a bien été supprimé.");
+                            }
+                            
                         });
                     }
                     else 
                     {
-                        req.session.erreur = 9;
-                        res.redirect('/');
+                        //req.session.erreur = 9;
+                        //res.redirect('/');
+                        return res.send("Erreur : Vous n'êtes pas le créateur de cet événement.");
                     }
                 }
             }
