@@ -53,7 +53,7 @@ td{
 {
    text-align: center;
    margin: 2% 10% 20% 30%;
-   width: 30%;
+   width: 40%;
    position: fixed;
    background-color: white;
    border: 1px solid;
@@ -126,4 +126,15 @@ td{
 
 .titreFormulaire{
     text-decoration:underline;
+}
+
+#suppression{
+    float: right;
+    margin-top:50px;
+}
+
+#modification{
+    float: left;
+    border-right:1px solid;
+    padding: 1em;
 }
