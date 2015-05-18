@@ -12,7 +12,7 @@ td{
 }
 
 .occupe{
-    background-color: red;
+    background-color: #67C262;
     border-top: 0px;
     border-bottom: 0px;
 }
@@ -26,28 +26,6 @@ td{
     width: 5.5%;
 }
 
-#formulaire
-{
-   text-align: center;
-   margin: 8% 10% 20% 30%;
-   width: 40%;
-   position: fixed;
-   background-color: white;
-   border: 1px solid;
-   border-color: black;
-}
-
-#formulaireEffacer
-{
-   text-align: center;
-   margin: 8% 10% 20% 30%;
-   width: 30%;
-   position: fixed;
-   background-color: white;
-   border: 1px solid;
-   border-color: black;
-}
-
 #message_popup{
     text-align: center;
     position: fixed;
@@ -57,6 +35,30 @@ td{
     background-color: #E2E3B6;
     padding: 1em;
     cursor: pointer;
+}
+
+#formulaire
+{
+   text-align: center;
+   margin: 2% 10% 20% 30%;
+   width: 40%;
+   position: fixed;
+   background-color: white;
+   border: 1px solid;
+   border-color: black;
+   padding: 1em;
+}
+
+#formulaireEffacer
+{
+   text-align: center;
+   margin: 2% 10% 20% 30%;
+   width: 40%;
+   position: fixed;
+   background-color: white;
+   border: 1px solid;
+   border-color: black;
+   padding: 1em;
 }
 
 .cache
@@ -123,14 +125,20 @@ td{
 }
 
 .titreFormulaire{
-    text-decoration: underline;
+    text-decoration:underline;
 }
 
-.inputdiv {
-    text-align: right;
-    margin-right: 10px;
+#suppression{
+    float: right;
+    margin-top:50px;
+}
+
+#modification{
+    float: left;
+    border-right:1px solid;
+    padding: 1em;
 }
 
 .formulaireLoginSignup input {
     width: 180px;
-}
+} 
