@@ -48,6 +48,17 @@ td{
    border-color: black;
 }
 
+#message_popup{
+    text-align: center;
+    position: fixed;
+    margin: 0% 10% 20% 40%;
+    border: 1px solid;
+    border-color: black;
+    background-color: #E2E3B6;
+    padding: 1em;
+    cursor: pointer;
+}
+
 .cache
 {
     display: none;
