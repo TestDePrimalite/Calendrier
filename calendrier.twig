@@ -27,34 +27,56 @@
         <table id="styleCalendrier">
             <!-- Les formulaires d'effacement ou d'ajout d'événements, qui sont cachés tant qu'on ne clique pas sur une case du calendrier (Si case occupée,
             on affiche le formulaire d'effacement d'événement, sinon le formulaire d'ajout). -->
-            <div class="cache" id="formulaireEffacer"><b>Voulez vous effacer cet événement? </b> <br>
-                <a id="formEffClose"></a>
-                <form action="javascript:effaceEv();">
-                    <br>
-                    {% if evenements != undefined %}
-                        Evenement :
+            <div class="cache" id="formulaireEffacer">
+                <div id="suppression">
+                    <b>Voulez vous effacer cet événement? </b> <br>
+                    <a id="formEffClose"></a>
+                    <form action="javascript:effaceEv();">
+                        <br>
+                        {% if evenements != undefined %}
+                            Evenement :
+                            
+                            <select id="ID_EFFACE" name="id">
+                                <!--<option>Ajout par javascript</option>-->
+                            </select>
+                        {% endif %}
                         
-                        <select id="ID_EFFACE" name="id">
-                            <!--<option>Ajout par javascript</option>-->
+                        <br>
+                        <input type="submit" value="Supprimer"/> 
+                    </form>
+                </div>
+                <br>
+                <div id="modification">
+                    <b>Voulez vous modifier cet événement? </b> <br>
+                    <form action="javascript:modifieEv();">
+                        <br> 
+                        Titre : <input id="TITRE_MODIFIE" type="text" name="titre" value="Choisissez un titre"></input>
+                        Jour: 
+                        <select id="JOUR_MODIFIE" name="jour"></select>
+                        Début : 
+                        <select id="DEBUT_MODIFIE" name="debut">
+                        </select><br>
+                        Fin : 
+                        <select id="FIN_MODIFIE" name="fin">
                         </select>
-                    {% endif %}
-                    
-                    <br>
-                    <input type="submit" /> 
-                </form>
+                        <br>
+                        <input type="submit" value="Modifier"/> 
+                        <br>
+                    </form>
+                </div>
             </div>
             <div class="cache" id="formulaire"><b>Remplissez le formulaire pour ajouter un événement :</b> <br>
                 <a id="formClose"></a>
                 <form action="javascript:ajoutEv();">
                     <br>
-                    Titre:  <input id="TITRE_AJOUT" type="text" name="titre" value="Choisissez un titre"></input><br/>
+                    Titre:  <input id="TITRE_AJOUT" type="text" name="titre" value="Choisissez un titre"></input><br>
                     Jour : 
                     <select id="formjour" name="jour">
                         <!--<option>Ajout par javascript</option>-->
-                    </select><br/>
+                    </select><br>
                     Début : 
                     <select id="DEBUT_AJOUT" name="debut">
-                    </select><br/>
+                    </select><br>
                     Fin : 
                     <select id="FIN_AJOUT" name="fin">
                     </select>
@@ -127,6 +149,7 @@
                         }
                         else
                         {
+                            // Formulaire effacer :
                             formulaireEffacer.className="";
                             formulaire.className="cache";
                             var parent = document.querySelector("#ID_EFFACE");
@@ -136,9 +159,54 @@
                             var option = document.createElement('option');
                             option.innerHTML = cal[event.target.dataset.row][event.target.dataset.column];
                             parent.appendChild(option);
+                            
+                            // Formulaire modifier : 
+                            // Generation de la case debut
+                            var parent_debut = document.querySelector("#DEBUT_MODIFIE");
+                            var a_eff_debut = document.querySelectorAll("#DEBUT_MODIFIE option");
+                            if(a_eff_debut.length==0)
+                            {
+                                for(var i = 1; i<cal.length; i++)
+                                {
+                                    var option_debut = document.createElement('option');
+                                    option_debut.innerHTML = cal[i][0].innerHTML + ":00";
+                                    parent_debut.appendChild(option_debut);
+                                }
+                            }
+                            
+                            
+                            
+                            // Génération de la case fin
+                            var parent_fin = document.querySelector("#FIN_MODIFIE");
+                            var a_eff_fin = document.querySelectorAll("#FIN_MODIFIE option");
+                            if(a_eff_fin.length == 0)
+                            {
+                                for(var i = 2; i < cal.length; i++)
+                                {
+                                    var option_fin = document.createElement('option');
+                                    option_fin.innerHTML = cal[i][0].innerHTML + ":00";
+                                    parent_fin.appendChild(option_fin);
+                                    
+                                }
+                                var option_fin = document.createElement('option');
+                                option_fin.innerHTML = "23:59:59";
+                                parent_fin.appendChild(option_fin);
+                            }
+                            
+                            // Génération du jour
+                            var parent_jour = document.querySelector("#JOUR_MODIFIE");
+                            var a_eff_jour = document.querySelectorAll('#JOUR_MODIFIE option');
+                            if(a_eff_jour.length==0)
+                            {
+                                for(var i = 1; i <= jours.length; i++)
+                                {
+                                    var option_jour = document.createElement('option');
+                                    option_jour.innerHTML = jours[i-1];
+                                    parent_jour.appendChild(option_jour);
+                                }
+                            }
                         }
                     }
-                    
                 });
                 document.getElementById("formClose").addEventListener("click",function(event)
                 {
@@ -146,7 +214,6 @@
                 });
                 document.getElementById("formEffClose").addEventListener("click",function(event)
                 {
-                    
                     formulaireEffacer.className="cache";
                 });
             };
@@ -339,8 +406,6 @@
             
             var evt = new EventSource('/liste');
             
-            
-            
             evt.addEventListener('evenements', function(e)
             {
                 var ev = JSON.parse(e.data);
@@ -361,7 +426,7 @@
                 var debut = encodeURIComponent(document.getElementById("DEBUT_AJOUT").value);
                 var fin = encodeURIComponent(document.getElementById("FIN_AJOUT").value);
                 document.getElementById("formulaire").className="cache";
-                xhr.send("titre="+titre+"&jour="+jour+"&debut="+debut+"&fin="+fin);
+                xhr.send("titre="+titre+"&jour="+jour+"&debut="+debut+"&fin="+fin);console.log("result: " + titre + jour + debut + fin);
                 xhr.onload=function()
                 {console.log(xhr.response);
                     if(xhr.response != undefined)
@@ -385,6 +450,30 @@
                 xhr.onload=function()
                 {
                     console.log(xhr.response);
+                    if(xhr.response != undefined)
+                    {
+                        var message = document.querySelector("#message_popup");
+                        message.innerHTML=xhr.response;
+                        message.className="";
+                    }
+                }
+            }
+            
+            function modifieEv()
+            {
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST",'/modifier',true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                
+                var titre = encodeURIComponent(document.getElementById("TITRE_MODIFIE").value);
+                var jour = encodeURIComponent(document.getElementById("JOUR_MODIFIE").value);
+                var debut = encodeURIComponent(document.getElementById("DEBUT_MODIFIE").value);
+                var fin = encodeURIComponent(document.getElementById("FIN_MODIFIE").value);
+                var id = encodeURIComponent(document.getElementById("ID_EFFACE").value);
+                document.getElementById("formulaireEffacer").className="cache";
+                xhr.send("titre="+titre+"&jour="+jour+"&debut="+debut+"&fin="+fin+"&id="+id);
+                xhr.onload=function()
+                {
                     if(xhr.response != undefined)
                     {
                         var message = document.querySelector("#message_popup");

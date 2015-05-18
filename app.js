@@ -47,7 +47,7 @@ app.all('/signup', function(req,res)
             console.log("Pass : " + req.body.pass);
             if(req.body.login.trim() != "" && req.body.pass.trim() != "")
             {
-                db.query('INSERT INTO utilisateurs VALUES (?,?)', [req.body.login,req.body.pass],
+                db.query('INSERT INTO utilisateurs VALUES (?,?)', [escape(req.body.login),escape(req.body.pass)],
                 function(err,result)
                 {
                     if(err)
@@ -58,8 +58,8 @@ app.all('/signup', function(req,res)
                     else if(result.length != 0)
                     {
                         console.log(result);
-                        req.session.login = req.body.login;
-                        req.session.pass = req.body.pass;
+                        req.session.login = escape(req.body.login);
+                        req.session.pass = escape(req.body.pass);
                         res.redirect('/');
                     }
                     else
@@ -129,7 +129,7 @@ app.all('/login', function(req,res)
             console.log("Pass : " + req.body.pass);
             if(req.body.login.trim() != "" && req.body.pass.trim() != "")
             {
-                db.query("SELECT * FROM utilisateurs WHERE login=(?) AND pass=(?)", [req.body.login,req.body.pass],
+                db.query("SELECT * FROM utilisateurs WHERE login=(?) AND pass=(?)", [escape(req.body.login),escape(req.body.pass)],
                 function(err,result)
                 {
                     if(err)
@@ -140,8 +140,8 @@ app.all('/login', function(req,res)
                     else if(result.length != 0)
                     {
                         console.log(result);
-                        req.session.login = req.body.login;
-                        req.session.pass = req.body.pass;
+                        req.session.login = escape(req.body.login);
+                        req.session.pass = escape(req.body.pass);
                         res.redirect('/');
                     }
                     else
@@ -179,8 +179,8 @@ app.get('/logout', function(req,res)
 Sinon, si l'événement ne se supperpose pas avec un autre événement, n'a pas une date de fin inférieur a une date de début, n'a pas de durée nulle,
 possède bien un titre, alors il est inséré dans la base de donnée.*/
 app.post('/ajouter', function(req,res)
-{console.log(req.session.login);
-     if(req.session.login == undefined)
+{
+     if(escape(req.session.login) == undefined)
     {
         return res.send("Erreur : Vous n'êtes pas connecté.");
     }
@@ -197,8 +197,7 @@ app.post('/ajouter', function(req,res)
             {
                 if(err)
                 {
-                    console.log(err);
-                    return res.send("Erreur : Problème de recherche dans la base de données. Veuillez réessayer.");
+                    return res.send("Erreur : Problème de recherche dans la base de données. Veuillez réessayer." + err);
                 }
                 else
                 {
@@ -214,8 +213,9 @@ app.post('/ajouter', function(req,res)
                             }
                         }
                     }
-                    db.query('INSERT INTO evenements VALUES (?,?,?,?,?,?)', [req.body.debut,req.body.fin,req.body.jour,req.session.login,
-                    req.body.titre,"De "+req.body.debut+" à "+req.body.fin+" le "+req.body.jour+" ("+req.session.login+")"],function(err,result)
+                    db.query('INSERT INTO evenements VALUES (?,?,?,?,?,?)', [req.body.debut,req.body.fin,req.body.jour,escape(req.session.login),
+                    req.body.titre,"De "+req.body.debut+" à "+req.body.fin+" le "+req.body.jour+" ("+escape(req.session.login)+")"],
+                    function(err,result)
                     {
                         if(err)
                         {
@@ -257,7 +257,7 @@ app.post('/ajouter', function(req,res)
         }
         else if(req.body.jour.trim() == "")
         {
-            return res.send("Aucune jour n'a été entré.");
+            return res.send("Aucun jour n'a été entré.");
         }
     }
 });
@@ -287,7 +287,7 @@ app.get('/liste', function(req,res)
 /* Ce gestionnaire permet d'effacer un événement de la base de donnée. */
 app.post('/effacer', function(req, res) 
 {
-    if(req.session.login == undefined)
+    if(escape(req.session.login) == "")
     {
         return res.send("Erreur : vous n'êtes pas connecté.");
     }
@@ -300,9 +300,12 @@ app.post('/effacer', function(req, res)
                 console.log(err);
                 return res.send("Erreur : Problème de recherche dans la base de donnée." + err);
             }
-            else {
-                if(result.length > 0) {
-                    if (result[0].login == req.session.login) {
+            else 
+            {
+                if(result.length > 0) 
+                {
+                    if (result[0].login == escape(req.session.login)) 
+                    {
                         db.query("DELETE from evenements WHERE id=(?)", [req.body.id], function(err,result)
                         {
                             if(err)
@@ -326,6 +329,76 @@ app.post('/effacer', function(req, res)
         });
     }
     
+});
+
+app.post('/modifier', function(req, res) {
+    if(req.session.login == undefined)
+    {
+        return res.send("Erreur : vous n'êtes pas connecté.");
+    }
+    else
+    {
+        if(req.body.titre.trim() != "" && req.body.debut.trim() != "" && req.body.fin.trim()!= "" && req.body.debut < req.body.fin
+            && req.body.jour.trim() != "")
+        {
+            db.query("SELECT * FROM evenements WHERE jour=?",[req.body.jour] , function(err,result)
+            {
+                if(err)
+                {
+                    return res.send("Erreur : Problème de recherche dans la base de donnée." + err);
+                }
+                else 
+                {
+                    if(result.length > 0)
+                    {
+                        for(var j in result)
+                        {
+                            if(req.body.id != result[j]["id"] && ((req.body.debut <= result[j]["debut"] 
+                            && req.body.fin > result[j]["debut"]) || (req.body.debut > result[j]["debut"] && req.body.debut < result[j]["fin"])))
+                            {
+                                return res.send("Erreur : Un événement est déjà présent au niveau de cette plage horaire.");
+                            }
+                            else if(req.body.id == result[j]["id"] && req.session.login != result[j]["login"])
+                                return res.send("Erreur : Vous n'êtes pas le créateur de cet événement.");
+                        }
+                    }
+                    db.query("UPDATE evenements SET debut=?, fin=?, jour=?, titre=? WHERE id=?", [req.body.debut,req.body.fin,req.body.jour,
+                    req.body.titre,req.body.id], function(err,result)
+                    {
+                        if(err)
+                        {
+                            return res.send(err);
+                        }
+                        else
+                        {
+                            an_emmiter.emit('/liste');
+                            res.send("L'événement a bien été modifié.");
+                        }
+                    });
+                }
+            });
+        }
+        else if(req.body.titre.trim() == "")
+        {
+            return res.send("Votre titre est vide.");
+        }
+        else if(req.body.debut.trim() == "")
+        {
+            return res.send("Aucune date de début n'a été entrée.");
+        }
+        else if(req.body.fin.trim() == "")
+        {
+            return res.send("Aucune date de fin n'a été entrée.");
+        }
+        else if(req.body.debut >= req.body.fin)
+        {
+            return res.send("La date de début est supérieur ou égal à la date de fin.");
+        }
+        else if(req.body.jour.trim() == "")
+        {
+            return res.send("Aucune jour n'a été entré.");
+        }
+    }
 });
 
 app.listen(process.env.PORT);
