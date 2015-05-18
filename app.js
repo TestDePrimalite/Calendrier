@@ -358,23 +358,37 @@ app.post('/modifier', function(req, res) {
                             {
                                 return res.send("Erreur : Un événement est déjà présent au niveau de cette plage horaire.");
                             }
-                            else if(req.body.id == result[j]["id"] && req.session.login != result[j]["login"])
-                                return res.send("Erreur : Vous n'êtes pas le créateur de cet événement.");
                         }
                     }
-                    db.query("UPDATE evenements SET debut=?, fin=?, jour=?, titre=? WHERE id=?", [req.body.debut,req.body.fin,req.body.jour,
-                    req.body.titre,req.body.id], function(err,result)
-                    {
+                    db.query('SELECT * FROM evenements', function(err, result) {
                         if(err)
-                        {
                             return res.send(err);
-                        }
                         else
                         {
-                            an_emmiter.emit('/liste');
-                            res.send("L'événement a bien été modifié.");
+                            if(result.length > 0)
+                            {
+                                for(var j in result)
+                                {
+                                    if(req.body.id == result[j]["id"] && req.session.login != result[j]["login"])
+                                        return res.send("Erreur : Vous n'êtes pas le créateur de cet événement.");
+                                }
+                            }
                         }
-                    });
+                        db.query("UPDATE evenements SET debut=?, fin=?, jour=?, titre=? WHERE id=?", [req.body.debut,req.body.fin,req.body.jour,
+                        req.body.titre,req.body.id], function(err,result)
+                        {
+                            if(err)
+                            {
+                                return res.send(err);
+                            }
+                            else
+                            {
+                                an_emmiter.emit('/liste');
+                                res.send("L'événement a bien été modifié.");
+                            }
+                        });
+                    })
+                    
                 }
             });
         }
