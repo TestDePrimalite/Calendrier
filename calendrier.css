@@ -130,13 +130,17 @@ td{
 
 #suppression{
     float: right;
-    margin-top:50px;
 }
 
 #modification{
     float: left;
     border-right:1px solid;
     padding: 1em;
+}
+
+.inputdiv {
+    text-align: right;
+    padding-right: 10px;
 }
 
 .formulaireLoginSignup input {
