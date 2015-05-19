@@ -180,7 +180,7 @@ Sinon, si l'événement ne se supperpose pas avec un autre événement, n'a pas 
 possède bien un titre, alors il est inséré dans la base de donnée.*/
 app.post('/ajouter', function(req,res)
 {
-     if(escape(req.session.login) == undefined)
+     if(req.session.login == undefined)
     {
         return res.send("Erreur : Vous n'êtes pas connecté.");
     }
@@ -287,7 +287,7 @@ app.get('/liste', function(req,res)
 /* Ce gestionnaire permet d'effacer un événement de la base de donnée. */
 app.post('/effacer', function(req, res) 
 {
-    if(escape(req.session.login) == "")
+    if(req.session.login == undefined)
     {
         return res.send("Erreur : vous n'êtes pas connecté.");
     }
