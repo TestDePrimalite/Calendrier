@@ -425,7 +425,7 @@
                 document.getElementById("formulaire").className="cache";
                 xhr.send("titre="+titre+"&jour="+jour+"&debut="+debut+"&fin="+fin);console.log("result: " + titre + jour + debut + fin);
                 xhr.onload=function()
-                {console.log(xhr.response);
+                {
                     if(xhr.response != undefined)
                     {
                         var message = document.querySelector("#message_popup");

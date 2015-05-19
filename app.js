@@ -338,27 +338,18 @@ app.post('/modifier', function(req, res) {
         if(req.body.titre.trim() != "" && req.body.debut.trim() != "" && req.body.fin.trim()!= "" && req.body.debut < req.body.fin
             && req.body.jour.trim() != "")
         {
-            db.query('SELECT * FROM evenements', function(err, result) 
+            db.query('SELECT * FROM evenements WHERE id=?',[req.body.id], function(err, result) 
             {
                 if(err)
                     return res.send(err);
-                else
-                {
-                    if(result.length > 0)
-                    {
-                        for(var j in result)
-                        {
-                            if(req.body.id == result[j]["id"] && req.session.login != result[j]["login"])
-                                return res.send("Erreur : Vous n'êtes pas le créateur de cet événement.");
-                        }
-                    }
-                }
+                else if(result.length == 0)
+                    return res.send("Erreur : Vous tentez de modifier un événement qui n'existe pas.");
+                else if(req.session.login != result[0]["login"])
+                    return res.send("Erreur : Vous n'êtes pas le créateur de cet événement.");
                 db.query("SELECT * FROM evenements WHERE jour=?",[req.body.jour] , function(err,result)
                 {
                     if(err)
-                    {
                         return res.send("Erreur : Problème de recherche dans la base de donnée." + err);
-                    }
                     else 
                     {
                         if(result.length > 0)
@@ -366,7 +357,8 @@ app.post('/modifier', function(req, res) {
                             for(var j in result)
                             {
                                 if(req.body.id != result[j]["id"] && ((req.body.debut <= result[j]["debut"] 
-                                && req.body.fin > result[j]["debut"]) || (req.body.debut > result[j]["debut"] && req.body.debut < result[j]["fin"])))
+                                && req.body.fin > result[j]["debut"]) || (req.body.debut > result[j]["debut"] 
+                                && req.body.debut < result[j]["fin"])))
                                 {
                                     return res.send("Erreur : Un événement est déjà présent au niveau de cette plage horaire.");
                                 }
