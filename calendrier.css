@@ -15,6 +15,7 @@ td{
     background-color: #67C262;
     border-top: 0px;
     border-bottom: 0px;
+    cursor: pointer;
 }
 
 #vide{
@@ -130,6 +131,7 @@ td{
 
 #suppression{
     float: right;
+    margin-top: 50px;
 }
 
 #modification{
