@@ -59,7 +59,6 @@ app.all('/signup', function(req,res)
                     {
                         console.log(result);
                         req.session.login = escape(req.body.login);
-                        req.session.pass = escape(req.body.pass);
                         res.redirect('/');
                     }
                     else
@@ -141,7 +140,6 @@ app.all('/login', function(req,res)
                     {
                         console.log(result);
                         req.session.login = escape(req.body.login);
-                        req.session.pass = escape(req.body.pass);
                         res.redirect('/');
                     }
                     else
@@ -171,7 +169,6 @@ app.all('/login', function(req,res)
 app.get('/logout', function(req,res)
 {
     req.session.login = null;
-    req.session.pass = null;
     res.redirect('/');
 });
 
