@@ -272,11 +272,13 @@ app.get('/liste', function(req,res)
         db.query('SELECT * FROM evenements', function(err,result)
         {
             if(err)
+                res.write(err);
+            else
             {
-                console.log(err);
+                res.write('event: evenements\n');
+                res.write('data: ' + JSON.stringify(result) + '\n\n');
             }
-            res.write('event: evenements\n');
-            res.write('data: ' + JSON.stringify(result) + '\n\n');
+            
         });
     });
 });
